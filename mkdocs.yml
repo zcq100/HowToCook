@@ -10,7 +10,6 @@ docs_dir: .
 theme:
   name: material
   language: zh
-  custom_dir: overrides
   features:
     - content.code.annotate
     # - content.tabs.link
@@ -107,13 +106,13 @@ nav:
           - 干锅花菜: ./dishes/vegetable_dish/干锅花菜/干锅花菜.md
           - 蚝油三鲜菇: ./dishes/vegetable_dish/蚝油三鲜菇/蚝油三鲜菇.md
           - 蚝油生菜: ./dishes/vegetable_dish/蚝油生菜.md
-          - 荷兰豆炒腊肠: ./dishes/vegetable_dish/荷兰豆炒腊肠/荷兰豆炒腊肠.md
           - 红烧冬瓜: ./dishes/vegetable_dish/红烧冬瓜/红烧冬瓜.md
           - 红烧茄子: ./dishes/vegetable_dish/红烧茄子.md
           - 虎皮青椒: ./dishes/vegetable_dish/虎皮青椒/虎皮青椒.md
           - 话梅煮毛豆: ./dishes/vegetable_dish/话梅煮毛豆/话梅煮毛豆.md
           - 鸡蛋羹: ./dishes/vegetable_dish/鸡蛋羹/鸡蛋羹.md
           - 微波炉鸡蛋羹: ./dishes/vegetable_dish/鸡蛋羹/微波炉鸡蛋羹.md
+          - 蒸箱鸡蛋羹: ./dishes/vegetable_dish/鸡蛋羹/蒸箱鸡蛋羹.md
           - 鸡蛋火腿炒黄瓜: ./dishes/vegetable_dish/鸡蛋火腿炒黄瓜.md
           - 茄子炖土豆: ./dishes/vegetable_dish/茄子炖土豆.md
           - 茭白炒肉: ./dishes/vegetable_dish/茭白炒肉/茭白炒肉.md
@@ -151,6 +150,7 @@ nav:
           - 干煸仔鸡: ./dishes/meat_dish/干煸仔鸡/干煸仔鸡.md
           - 宫保鸡丁: ./dishes/meat_dish/宫保鸡丁/宫保鸡丁.md
           - 咕噜肉: ./dishes/meat_dish/咕噜肉.md
+          - 荷兰豆炒腊肠: ./dishes/meat_dish/荷兰豆炒腊肠/荷兰豆炒腊肠.md
           - 黑椒牛柳: ./dishes/meat_dish/黑椒牛柳/黑椒牛柳.md
           - 简易红烧肉: ./dishes/meat_dish/红烧肉/简易红烧肉.md
           - 南派红烧肉: ./dishes/meat_dish/红烧肉/南派红烧肉.md
@@ -180,6 +180,7 @@ nav:
           - 麻婆豆腐: ./dishes/meat_dish/麻婆豆腐/麻婆豆腐.md
           - 梅菜扣肉: ./dishes/meat_dish/梅菜扣肉/梅菜扣肉.md
           - 啤酒鸭: ./dishes/meat_dish/啤酒鸭/啤酒鸭.md
+          - 黔式腊肠娃娃菜: ./dishes/meat_dish/黔式腊肠娃娃菜/黔式腊肠娃娃菜.md
           - 青椒土豆炒肉: ./dishes/meat_dish/青椒土豆炒肉/青椒土豆炒肉.md
           - 肉饼炖蛋: ./dishes/meat_dish/肉饼炖蛋.md
           - 杀猪菜: ./dishes/meat_dish/杀猪菜.md
@@ -211,6 +212,7 @@ nav:
           - 意式烤鸡: ./dishes/meat_dish/意式烤鸡.md
           - 鱼香茄子: ./dishes/meat_dish/鱼香茄子/鱼香茄子.md
           - 鱼香肉丝: ./dishes/meat_dish/鱼香肉丝.md
+          - 枝竹羊腩煲: ./dishes/meat_dish/枝竹羊腩煲/枝竹羊腩煲.md
           - 猪皮冻: ./dishes/meat_dish/猪皮冻/猪皮冻.md
           - 猪肉烩酸菜: ./dishes/meat_dish/猪肉烩酸菜.md
           - 柱候牛腩: ./dishes/meat_dish/柱候牛腩/柱候牛腩.md
@@ -257,6 +259,7 @@ nav:
           - 溏心蛋: ./dishes/breakfast/溏心蛋.md
           - 吐司果酱: ./dishes/breakfast/吐司果酱.md
           - 微波炉蛋糕: ./dishes/breakfast/微波炉蛋糕.md
+          - 微波炉荷包蛋: ./dishes/breakfast/微波炉荷包蛋.md
           - 燕麦鸡蛋饼: ./dishes/breakfast/燕麦鸡蛋饼.md
           - 蒸花卷: ./dishes/breakfast/蒸花卷.md
           - 蒸水蛋: ./dishes/breakfast/蒸水蛋.md
@@ -364,6 +367,7 @@ nav:
           - 反沙芋头: ./dishes/dessert/反沙芋头/反沙芋头.md
           - 咖啡椰奶冻: ./dishes/dessert/咖啡椰奶冻/咖啡椰奶冻.md
           - 烤蛋挞: ./dishes/dessert/烤蛋挞/烤蛋挞.md
+          - 玛格丽特饼干: ./dishes/dessert/玛格丽特饼干/玛格丽特饼干.md
           - 魔芋蛋糕: ./dishes/dessert/魔芋蛋糕/魔芋蛋糕.md
           - 戚风蛋糕: ./dishes/dessert/戚风蛋糕/戚风蛋糕.md
           - 提拉米苏: ./dishes/dessert/提拉米苏/提拉米苏.md
