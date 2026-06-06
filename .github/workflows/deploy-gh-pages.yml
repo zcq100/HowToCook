@@ -27,6 +27,13 @@ jobs:
       - name: Install MkDocs
         run: pip install mkdocs-material mkdocs-exclude
 
+      - name: Setup docs directory
+        run: |
+          mkdir -p docs
+          cp README.md docs/
+          cp -r dishes docs/
+          cp -r tips docs/
+
       - name: Build site
         run: mkdocs build
 
