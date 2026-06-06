@@ -2,12 +2,6 @@ name: Deploy to GitHub Pages
 
 on:
   workflow_dispatch:
-    inputs:
-      publish_dir:
-        description: '要发布的目录'
-        required: false
-        default: '.'
-        type: string
 
 permissions:
   contents: write
@@ -26,17 +20,21 @@ jobs:
       - run: npm install
       - run: npm run build
 
-      - name: Install pandoc
-        run: sudo apt-get install -y pandoc
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
 
-      - name: Generate index.html from README
-        run: pandoc README.md -o index.html --metadata title="HowToCook" --standalone
+      - name: Install MkDocs
+        run: pip install mkdocs-material mkdocs-exclude
+
+      - name: Build site
+        run: mkdocs build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ github.event.inputs.publish_dir || '.' }}
+          publish_dir: site
           destination_dir: '.'
           force_orphan: true
           commit_message: 'Deploy to GitHub Pages [skip ci]'

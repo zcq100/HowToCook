@@ -1,0 +1,61 @@
+site_name: 程序员做饭指南
+site_url: https://pages.zcq100.com/HowToCook/
+repo_url: https://github.com/zcq100/HowToCook
+edit_uri: edit/master/
+
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.sections
+    - navigation.expand
+    - search.highlight
+    - search.suggest
+  palette:
+    - scheme: default
+      primary: teal
+      accent: orange
+      toggle:
+        icon: material/brightness-7
+        name: 深色模式
+    - scheme: slate
+      primary: teal
+      accent: orange
+      toggle:
+        icon: material/brightness-4
+        name: 浅色模式
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+plugins:
+  - search:
+      lang: zh
+  - exclude:
+      glob:
+        - dishes/template/*
+        - .github/*
+        - .git/*
+
+nav:
+  - 🏠 首页: README.md
+  - 厨房准备:
+    - 厨房准备: tips/厨房准备.md
+    - 今天吃什么: tips/如何选择现在吃什么.md
+  - 🥬 素菜: dishes/vegetable_dish/
+  - 🥩 荤菜: dishes/meat_dish/
+  - 🐟 水产: dishes/aquatic/
+  - 🌅 早餐: dishes/breakfast/
+  - 🍚 主食: dishes/staple/
+  - 🥫 半成品加工: dishes/semi-finished/
+  - 🍲 汤与粥: dishes/soup/
+  - 🥤 饮料: dishes/drink/
+  - 🍰 甜品: dishes/dessert/
+  - 🫙 酱料和其它材料: dishes/condiment/
+  - 进阶知识:
+    - 进阶技巧: tips/advanced/
+    - 学习: tips/learn/
