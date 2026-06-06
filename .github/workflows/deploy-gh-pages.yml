@@ -34,6 +34,59 @@ jobs:
           cp -r dishes docs/
           cp -r tips docs/
 
+      - name: Generate index pages for categories
+        run: |
+          python3 -c "
+          import os
+
+          DOCS = 'docs'
+
+          def make_index_for_dir(path):
+              if not os.path.isdir(path):
+                  return
+              if os.path.exists(f'{path}/index.md') or os.path.exists(f'{path}/README.md'):
+                  return
+              items = sorted(os.listdir(path))
+              md_files = []
+              sub_dirs = []
+              for item in items:
+                  if item.startswith('.') or item == 'template':
+                      continue
+                  full = os.path.join(path, item)
+                  if os.path.isdir(full):
+                      sub_dirs.append(item)
+                      make_index_for_dir(full)
+                  elif item.endswith('.md'):
+                      md_files.append(item)
+              if not md_files and not sub_dirs:
+                  return
+              lines = []
+              rel = os.path.relpath(path, DOCS)
+              cat_name = os.path.basename(path)
+              lines.append(f'# {cat_name}\n')
+              if sub_dirs:
+                  lines.append('## 分类\n')
+                  for d in sub_dirs:
+                      lines.append(f'- [{d}]({d}/)\n')
+              if md_files:
+                  lines.append('## 菜谱\n')
+                  for f in md_files:
+                      name = f.replace('.md', '')
+                      lines.append(f'- [{name}]({f})\n')
+              with open(f'{path}/index.md', 'w') as f:
+                  f.writelines(lines)
+
+          # Generate indexes for dishes/ categories
+          for cat in os.listdir(f'{DOCS}/dishes'):
+              if cat == 'template':
+                  continue
+              make_index_for_dir(f'{DOCS}/dishes/{cat}')
+
+          # Generate indexes for tips/ subdirectories
+          for tips_dir in ['advanced', 'learn']:
+              make_index_for_dir(f'{DOCS}/tips/{tips_dir}')
+          "
+
       - name: Build site
         run: mkdocs build
 
