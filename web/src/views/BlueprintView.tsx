@@ -13,6 +13,7 @@ import {
 import type { Recipe } from '../types'
 import { buildGraph } from '../graph/layout'
 import { GraphCtx, nodeTypes, type GraphState } from '../graph/nodes'
+import { useIsMobile } from '../useMediaQuery'
 
 /** 蓝图视图：像 UE 蓝图一样，用执行线串起步骤，原料以数据引脚接入步骤 */
 export default function BlueprintView({ recipe }: { recipe: Recipe }) {
@@ -29,6 +30,7 @@ function Blueprint({ recipe }: { recipe: Recipe }) {
   const [current, setCurrent] = useState(-1)
   const [focus, setFocus] = useState<string | null>(null)
   const flow = useReactFlow()
+  const isMobile = useIsMobile()
 
   // 悬停节点时，高亮与之直接相连的节点
   const related = useMemo(() => {
@@ -91,10 +93,13 @@ function Blueprint({ recipe }: { recipe: Recipe }) {
   }, [graph.edges, current, focus, recipe.steps])
 
   // 初始视野：开始节点 + 前两步及其原料，保证文字可读；全貌看右下角小地图
+  // 手机上只对准开始节点，保证字号可读；之后由“下一步”逐个居中步骤
   const initialView = useMemo(() => {
-    const ids = new Set(['start', ...recipe.steps.slice(0, 2).flatMap((s) => [s.id, ...s.uses])])
-    return { nodes: [...ids].map((id) => ({ id })), padding: 0.12, maxZoom: 1 }
-  }, [recipe.steps])
+    const ids = isMobile
+      ? ['start']
+      : ['start', ...recipe.steps.slice(0, 2).flatMap((s) => [s.id, ...s.uses])]
+    return { nodes: [...new Set(ids)].map((id) => ({ id })), padding: 0.12, maxZoom: isMobile ? 0.9 : 1 }
+  }, [recipe.steps, isMobile])
 
   const ctx: GraphState = useMemo(() => ({ current, focus, related, setCurrent: go }), [current, focus, related, go])
 
@@ -109,31 +114,35 @@ function Blueprint({ recipe }: { recipe: Recipe }) {
           edges={edges}
           nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
-          onNodeMouseEnter={(_, n) => setFocus(n.id)}
-          onNodeMouseLeave={() => setFocus(null)}
+          onNodeMouseEnter={(_, n) => !isMobile && setFocus(n.id)}
+          onNodeMouseLeave={() => !isMobile && setFocus(null)}
+          // 触屏没有悬停：点按节点切换高亮，点空白处取消
+          onNodeClick={(_, n) => isMobile && setFocus((f) => (f === n.id ? null : n.id))}
+          onPaneClick={() => setFocus(null)}
           nodesConnectable={false}
           fitView
           fitViewOptions={initialView}
           minZoom={0.15}
           colorMode="dark"
+          attributionPosition={isMobile ? 'top-right' : 'bottom-right'}
         >
           <Background id="minor" variant={BackgroundVariant.Lines} gap={16} color="#2c2c2c" />
           <Background id="major" variant={BackgroundVariant.Lines} gap={128} color="#1a1a1a" lineWidth={1.5} />
-          <Controls showInteractive={false} />
-          <MiniMap pannable zoomable nodeColor={miniColor} maskColor="rgba(0,0,0,.55)" />
+          {!isMobile && <Controls showInteractive={false} />}
+          {!isMobile && <MiniMap pannable zoomable nodeColor={miniColor} maskColor="rgba(0,0,0,.55)" />}
         </ReactFlow>
         <div className="bp-toolbar">
-          <button onClick={() => go(current - 1)} disabled={current < 0}>
-            ← 上一步
+          <button onClick={() => go(current - 1)} disabled={current < 0} aria-label="上一步">
+            ← <span className="btn-text">上一步</span>
           </button>
           <span className="bp-progress">{stepLabel}</span>
-          <button onClick={() => go(current + 1)} disabled={current >= recipe.steps.length}>
-            下一步 →
+          <button onClick={() => go(current + 1)} disabled={current >= recipe.steps.length} aria-label="下一步">
+            <span className="btn-text">下一步</span> →
           </button>
-          <button className="ghost" onClick={() => (setCurrent(-1), flow.fitView({ padding: 0.1, duration: 400 }))}>
+          <button className="ghost" onClick={() => (setCurrent(-1), flow.fitView({ ...initialView, duration: 400 }))}>
             重置
           </button>
-          <span className="hint">键盘 ← → 切换步骤 · 悬停节点查看连线</span>
+          {!isMobile && <span className="hint">键盘 ← → 切换步骤 · 悬停节点查看连线</span>}
         </div>
       </div>
     </GraphCtx.Provider>

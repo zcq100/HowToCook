@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState, type ComponentType } from 'react'
 import type { Recipe } from './types'
 import { stars } from './inline'
+import { REPO_URL } from './config'
+import { GitHubIcon, MenuIcon } from './icons'
 import BlueprintView from './views/BlueprintView'
 import TextView from './views/TextView'
 
@@ -21,6 +23,7 @@ export default function App() {
   const [route, setRoute] = useState(readHash)
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<string>('all')
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
     fetch('data/recipes.json')
@@ -34,6 +37,7 @@ export default function App() {
 
   const navigate = (view: string, id: string) => {
     location.hash = `${view}/${id}`
+    setDrawerOpen(false)
   }
 
   const categories = useMemo(() => {
@@ -55,10 +59,16 @@ export default function App() {
   const View = VIEWS.find((v) => v.id === route.view)!.component
 
   return (
-    <div className="app">
+    <div className={'app' + (drawerOpen ? ' drawer-open' : '')}>
+      <div className="backdrop" onClick={() => setDrawerOpen(false)} />
       <aside className="sidebar">
         <div className="brand">
-          HowToCook <span>菜谱蓝图</span>
+          <span>
+            HowToCook <em>菜谱蓝图</em>
+          </span>
+          <a className="repo-link" href={REPO_URL} target="_blank" rel="noreferrer" title="GitHub 仓库">
+            <GitHubIcon size={18} />
+          </a>
         </div>
         <input
           className="search"
@@ -97,6 +107,10 @@ export default function App() {
             </li>
           ))}
         </ul>
+        <a className="sidebar-foot" href={REPO_URL} target="_blank" rel="noreferrer">
+          <GitHubIcon size={14} />
+          zcq100/HowToCook
+        </a>
       </aside>
 
       <main className="main">
@@ -105,11 +119,16 @@ export default function App() {
         {recipe && (
           <>
             <div className="topbar">
+              <button className="menu-btn" onClick={() => setDrawerOpen(true)} aria-label="打开菜谱列表">
+                <MenuIcon />
+              </button>
               <h1>{recipe.name}</h1>
-              <span className="stars">{stars(recipe.difficulty)}</span>
-              {recipe.calories && <span className="muted">{recipe.calories}</span>}
-              <span className="muted">
-                {recipe.ingredients.length} 种原料 · {recipe.steps.length} 步
+              <span className="topbar-meta">
+                <span className="stars">{stars(recipe.difficulty)}</span>
+                {recipe.calories && <span className="muted">{recipe.calories}</span>}
+                <span className="muted">
+                  {recipe.ingredients.length} 种原料 · {recipe.steps.length} 步
+                </span>
               </span>
               <div className="tabs">
                 {VIEWS.map((v) => (

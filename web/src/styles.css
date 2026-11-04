@@ -35,13 +35,21 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .stars { color: var(--accent); letter-spacing: 1px; }
 
 /* ---------- 布局 ---------- */
-.app { display: grid; grid-template-columns: 260px 1fr; height: 100vh; }
+.app { display: grid; grid-template-columns: 260px 1fr; height: 100vh; height: 100dvh; }
+.backdrop, .menu-btn { display: none; }
 .sidebar {
   display: flex; flex-direction: column; min-height: 0;
   background: var(--panel); border-right: 1px solid var(--line); padding: 14px 12px 0;
 }
-.brand { font-weight: 700; font-size: 16px; margin-bottom: 12px; }
-.brand span { color: var(--accent); font-weight: 500; margin-left: 4px; }
+.brand { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 16px; margin-bottom: 12px; }
+.brand em { font-style: normal; color: var(--accent); font-weight: 500; margin-left: 4px; }
+.repo-link { display: flex; padding: 4px; margin: -4px; color: var(--muted); border-radius: 4px; }
+.repo-link:hover { color: var(--text); }
+.sidebar-foot {
+  display: flex; align-items: center; gap: 6px; margin: 0 -12px; padding: 10px 14px;
+  border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; text-decoration: none;
+}
+.sidebar-foot:hover { color: var(--text); }
 .search {
   width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line);
   background: #121212; color: var(--text); outline: none;
@@ -77,7 +85,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   display: flex; align-items: baseline; gap: 14px; padding: 12px 18px;
   border-bottom: 1px solid var(--line); background: var(--panel);
 }
-.topbar h1 { margin: 0; font-size: 20px; }
+.topbar h1 { margin: 0; font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-meta { display: flex; align-items: baseline; gap: 14px; white-space: nowrap; }
 .tabs { margin-left: auto; display: flex; background: #121212; border-radius: 6px; padding: 2px; }
 .tabs button { border: 0; background: transparent; padding: 5px 14px; border-radius: 4px; }
 .tabs button.on { background: #333; color: var(--accent); }
@@ -99,6 +108,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .bp-toolbar button.ghost { background: transparent; }
 .bp-progress { min-width: 92px; text-align: center; font-variant-numeric: tabular-nums; color: var(--accent); }
 .bp-toolbar .hint { color: var(--muted); font-size: 12px; margin-left: 6px; }
+.bp-toolbar > * { white-space: nowrap; }
+@media (max-width: 1280px) { .bp-toolbar .hint { display: none; } }
 
 /* 节点公共样式 */
 .bp-node {
@@ -207,3 +218,61 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .text-view .steps li { margin-bottom: 10px; }
 .text-view .steps strong { color: var(--accent); }
 .text-view .step-note { margin-left: 0; }
+
+.source-link { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; }
+.source-link a { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; }
+.source-link a:hover { color: var(--accent); }
+
+/* ---------- 手机 ---------- */
+@media (max-width: 768px) {
+  .app { grid-template-columns: 1fr; }
+
+  /* 侧栏改为抽屉 */
+  .sidebar {
+    position: fixed; z-index: 20; top: 0; bottom: 0; left: 0; width: min(86vw, 320px);
+    padding-top: calc(14px + env(safe-area-inset-top));
+    transform: translateX(-100%); transition: transform .22s ease; box-shadow: 0 0 40px rgba(0, 0, 0, .6);
+  }
+  .drawer-open .sidebar { transform: none; }
+  .backdrop {
+    display: block; position: fixed; inset: 0; z-index: 19; background: rgba(0, 0, 0, .5);
+    opacity: 0; pointer-events: none; transition: opacity .22s;
+  }
+  .drawer-open .backdrop { opacity: 1; pointer-events: auto; }
+  .search { font-size: 16px; } /* 小于 16px 时 iOS 会自动放大页面 */
+  /* 分类改为单行横向滑动，给列表留出空间 */
+  .cats { flex-wrap: nowrap; overflow-x: auto; margin: 10px -12px; padding: 0 12px; scrollbar-width: none; }
+  .cats::-webkit-scrollbar { display: none; }
+  .cats button { flex: none; padding: 5px 10px; font-size: 13px; }
+  .list button { padding: 10px 14px 10px 15px; }
+  .sidebar-foot { padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+
+  /* 顶栏：菜单 + 菜名 + 视图切换，一行放下 */
+  .topbar { align-items: center; gap: 8px; padding: 8px 10px; padding-top: calc(8px + env(safe-area-inset-top)); }
+  .menu-btn {
+    display: flex; align-items: center; justify-content: center; flex: none;
+    width: 38px; height: 38px; margin: -4px 0 -4px -4px; border: 0; background: transparent; border-radius: 6px;
+  }
+  .menu-btn:active { background: #2b2b2b; }
+  .topbar h1 { font-size: 17px; flex: 1; min-width: 0; }
+  .topbar-meta { display: none; }
+  .tabs button { padding: 7px 12px; }
+
+  /* 蓝图：底部工具栏铺满，按钮加大 */
+  .bp-toolbar {
+    left: 10px; right: 10px; transform: none; justify-content: space-between;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+  .bp-toolbar button { padding: 9px 14px; }
+  .bp-progress { min-width: 0; flex: 1; }
+  .bp-btn { padding: 7px 12px; font-size: 13px; }
+
+  .text-view { padding: 20px 16px calc(40px + env(safe-area-inset-bottom)); }
+  .text-view h1 { font-size: 24px; }
+  .text-view .meta { flex-wrap: wrap; gap: 4px 12px; }
+  .text-view td:first-child { width: 40%; }
+}
+
+@media (max-width: 380px) {
+  .bp-toolbar .btn-text { display: none; }
+}

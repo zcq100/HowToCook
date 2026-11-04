@@ -1,5 +1,7 @@
 import type { Recipe } from '../types'
 import { Inline, stars } from '../inline'
+import { sourceUrl } from '../config'
+import { GitHubIcon } from '../icons'
 
 /** 传统图文视图：作为对照，也方便后续扩展更多阅览方式 */
 export default function TextView({ recipe }: { recipe: Recipe }) {
@@ -61,6 +63,12 @@ export default function TextView({ recipe }: { recipe: Recipe }) {
           </ul>
         </section>
       )}
+
+      <footer className="source-link">
+        <a href={sourceUrl(recipe.id)} target="_blank" rel="noreferrer">
+          <GitHubIcon size={14} /> 在 GitHub 查看原文 / 提交修改
+        </a>
+      </footer>
     </article>
   )
 }
