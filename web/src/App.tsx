@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState, type ComponentType } from 'react'
 import type { Recipe } from './types'
 import { stars } from './inline'
 import { REPO_URL } from './config'
-import { GitHubIcon, MenuIcon } from './icons'
+import { AutoThemeIcon, GitHubIcon, MenuIcon, MoonIcon, SunIcon } from './icons'
+import { THEME_LABEL, THEME_ORDER, useTheme, type Theme } from './useTheme'
 import BlueprintView from './views/BlueprintView'
 import TextView from './views/TextView'
 
 /** 阅览方式注册表：新增视图只需在这里加一项 */
-const VIEWS: { id: string; label: string; component: ComponentType<{ recipe: Recipe }> }[] = [
+const VIEWS: { id: string; label: string; component: ComponentType<{ recipe: Recipe; theme: Theme }> }[] = [
   { id: 'blueprint', label: '蓝图', component: BlueprintView },
   { id: 'text', label: '图文', component: TextView },
 ]
@@ -24,6 +25,8 @@ export default function App() {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<string>('all')
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const { pref, theme, setPref } = useTheme()
+  const nextPref = THEME_ORDER[(THEME_ORDER.indexOf(pref) + 1) % THEME_ORDER.length]
 
   useEffect(() => {
     fetch('data/recipes.json')
@@ -66,9 +69,19 @@ export default function App() {
           <span>
             HowToCook <em>菜谱蓝图</em>
           </span>
-          <a className="repo-link" href={REPO_URL} target="_blank" rel="noreferrer" title="GitHub 仓库">
-            <GitHubIcon size={18} />
-          </a>
+          <span className="brand-actions">
+            <button
+              className="theme-btn"
+              onClick={() => setPref(nextPref)}
+              title={`主题：${THEME_LABEL[pref]}（点击切换为${THEME_LABEL[nextPref]}）`}
+              aria-label={`主题：${THEME_LABEL[pref]}，点击切换为${THEME_LABEL[nextPref]}`}
+            >
+              {pref === 'system' ? <AutoThemeIcon /> : pref === 'light' ? <SunIcon /> : <MoonIcon />}
+            </button>
+            <a className="repo-link" href={REPO_URL} target="_blank" rel="noreferrer" title="GitHub 仓库">
+              <GitHubIcon size={18} />
+            </a>
+          </span>
         </div>
         <input
           className="search"
@@ -139,7 +152,7 @@ export default function App() {
               </div>
             </div>
             <div className="view">
-              <View recipe={recipe} />
+              <View recipe={recipe} theme={theme} />
             </div>
           </>
         )}

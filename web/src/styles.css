@@ -1,38 +1,120 @@
+/* ---------- 主题 ----------
+ * 深色为默认值；<html data-theme="light"> 时覆盖为浅色。
+ * data-theme 由 index.html 中的内联脚本在首屏前设置（默认跟随系统），之后由 useTheme 维护。
+ */
 :root {
+  color-scheme: dark;
   --bg: #161616;
   --panel: #1e1e1e;
   --line: #2e2e2e;
   --text: #e6e6e6;
   --muted: #8d8d8d;
-  --accent: #e8a33d;
+  --accent: #e8a33d;        /* 填充、描边用 */
+  --accent-text: #e8a33d;   /* 文字用：浅色模式下需要更深以保证对比度 */
+  --on-accent: #1a1a1a;
+  --input-bg: #121212;
+  --hover: #242424;
+  --selected: #2d2a22;
+  --seg-bg: #121212;
+  --seg-on: #333;
+  --pip-off: #4a4a4a;
+  --pip-dim: #b5843a;
+  --scroll: #333;
+  --scroll-hover: #4a4a4a;
+  --img-bg: #222;
+  --backdrop: rgba(0, 0, 0, .5);
+  --drawer-shadow: rgba(0, 0, 0, .6);
+  /* 蓝图 */
+  --canvas: #232323;
+  --grid-minor: #2c2c2c;
+  --grid-major: #1a1a1a;
+  --toolbar-bg: rgba(20, 20, 20, .92);
+  --toolbar-border: #3a3a3a;
+  --btn-bg: #2b2b2b;
+  --btn-border: #444;
+  --node-bg: #151515;
+  --node-border: #0a0a0a;
+  --node-shadow: rgba(0, 0, 0, .55);
+  --note-border: #555;
+  --amount: #bbb;
+  --pin-hole: #121212;
+  --pin-l: 62%;             /* 原料引脚 / 连线的亮度，见 graph/layout.ts */
   --exec: #ffffff;
+  --exec-edge: #cfcfcf;
+  --done-text: #8a8a8a;
+  --done-strong: #a08050;
+  --banner-bg: #3b2f12;
+  --minimap-bg: #1a1a1a;
   font-family: 'Inter', 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif;
   color: var(--text);
   background: var(--bg);
   font-size: 14px;
 }
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f6f5f2;
+  --panel: #ffffff;
+  --line: #e4e2dc;
+  --text: #1f1f1f;
+  --muted: #6f6f6f;
+  --accent: #e39b2d;
+  --accent-text: #a8620a;
+  --on-accent: #1a1a1a;
+  --input-bg: #f6f5f2;
+  --hover: #f1efea;
+  --selected: #fcf1de;
+  --seg-bg: #ecebe6;
+  --seg-on: #ffffff;
+  --pip-off: #d6d3cc;
+  --pip-dim: #d39a45;
+  --scroll: #cfccc4;
+  --scroll-hover: #aaa69c;
+  --img-bg: #ebe9e4;
+  --backdrop: rgba(0, 0, 0, .28);
+  --drawer-shadow: rgba(0, 0, 0, .18);
+  --canvas: #f1f0ec;
+  --grid-minor: #e8e6e0;
+  --grid-major: #dddad3;
+  --toolbar-bg: rgba(255, 255, 255, .94);
+  --toolbar-border: #dcd9d2;
+  --btn-bg: #ffffff;
+  --btn-border: #cfccc4;
+  --node-bg: #ffffff;
+  --node-border: #d6d3cc;
+  --node-shadow: rgba(60, 50, 30, .14);
+  --note-border: #d0cdc5;
+  --amount: #555;
+  --pin-hole: #ffffff;
+  --pin-l: 40%;
+  --exec: #5c5c5c;
+  --exec-edge: #8f8c85;
+  --done-text: #9a978f;
+  --done-strong: #b98a4a;
+  --banner-bg: #fcefd6;
+  --minimap-bg: #fafaf8;
+}
 * { box-sizing: border-box; }
 body { margin: 0; }
 button { font: inherit; color: inherit; cursor: pointer; }
 
-/* 深色细滚动条：默认几乎隐形，悬停区域时显现 */
+/* 细滚动条：默认几乎隐形，悬停区域时显现 */
 /* Chromium 中一旦设置标准属性，::-webkit-scrollbar 会失效（还会出现上下箭头），所以标准属性只给 Firefox */
 @supports not selector(::-webkit-scrollbar) {
-  * { scrollbar-width: thin; scrollbar-color: #3a3a3a transparent; }
+  * { scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; }
 }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-button { display: none; }
 *::-webkit-scrollbar-corner { background: transparent; }
 *::-webkit-scrollbar-thumb {
-  background: #333; border-radius: 4px; border: 2px solid transparent; background-clip: padding-box;
+  background: var(--scroll); border-radius: 4px; border: 2px solid transparent; background-clip: padding-box;
 }
-*:hover::-webkit-scrollbar-thumb { background-color: #4a4a4a; }
+*:hover::-webkit-scrollbar-thumb { background-color: var(--scroll-hover); }
 *::-webkit-scrollbar-thumb:hover { background-color: var(--accent); }
 .muted { color: var(--muted); }
 .small { font-size: 12px; }
 .tiny { font-size: 11px; }
-.stars { color: var(--accent); letter-spacing: 1px; }
+.stars { color: var(--accent-text); letter-spacing: 1px; }
 
 /* ---------- 布局 ---------- */
 .app { display: grid; grid-template-columns: 260px 1fr; height: 100vh; height: 100dvh; }
@@ -42,9 +124,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: var(--panel); border-right: 1px solid var(--line); padding: 14px 12px 0;
 }
 .brand { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 16px; margin-bottom: 12px; }
-.brand em { font-style: normal; color: var(--accent); font-weight: 500; margin-left: 4px; }
+.brand em { font-style: normal; color: var(--accent-text); font-weight: 500; margin-left: 4px; }
 .repo-link { display: flex; padding: 4px; margin: -4px; color: var(--muted); border-radius: 4px; }
 .repo-link:hover { color: var(--text); }
+.brand-actions { display: flex; align-items: center; gap: 10px; }
+.theme-btn {
+  display: flex; padding: 4px; margin: -4px; border: 0; background: transparent; color: var(--muted); border-radius: 4px;
+}
+.theme-btn:hover { color: var(--text); }
 .sidebar-foot {
   display: flex; align-items: center; gap: 6px; margin: 0 -12px; padding: 10px 14px;
   border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; text-decoration: none;
@@ -52,33 +139,33 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .sidebar-foot:hover { color: var(--text); }
 .search {
   width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line);
-  background: #121212; color: var(--text); outline: none;
+  background: var(--input-bg); color: var(--text); outline: none;
 }
 .search:focus { border-color: var(--accent); }
 .cats { display: flex; flex-wrap: wrap; gap: 4px; margin: 10px 0; }
 .cats button {
   border: 1px solid var(--line); background: transparent; border-radius: 4px; padding: 2px 8px; font-size: 12px;
 }
-.cats button.on { background: var(--accent); border-color: var(--accent); color: #1a1a1a; }
+.cats button.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .count { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
 .list { list-style: none; margin: 0 -12px; padding: 0; overflow-y: auto; flex: 1; }
 .list button {
   display: flex; flex-direction: column; gap: 3px; width: 100%;
   border: 0; background: transparent; padding: 7px 14px 7px 15px; text-align: left;
 }
-.list button:hover { background: #242424; }
-.list button.on { background: #2d2a22; box-shadow: inset 3px 0 var(--accent); }
+.list button:hover { background: var(--hover); }
+.list button.on { background: var(--selected); box-shadow: inset 3px 0 var(--accent); }
 .list .name {
   font-size: 14px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.list button.on .name { color: var(--accent); font-weight: 600; }
+.list button.on .name { color: var(--accent-text); font-weight: 600; }
 .list .meta { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; color: var(--muted); }
 .list .meta-text { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .pips { display: inline-flex; gap: 3px; flex: none; }
-.pips i { width: 6px; height: 6px; border-radius: 50%; background: #4a4a4a; }
+.pips i { width: 6px; height: 6px; border-radius: 50%; background: var(--pip-off); }
 .pips i.on { background: var(--accent); }
-.list button:not(.on) .pips i.on { background: #b5843a; }
+.list button:not(.on) .pips i.on { background: var(--pip-dim); }
 
 .main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .topbar {
@@ -87,34 +174,35 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .topbar h1 { margin: 0; font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .topbar-meta { display: flex; align-items: baseline; gap: 14px; white-space: nowrap; }
-.tabs { margin-left: auto; display: flex; background: #121212; border-radius: 6px; padding: 2px; }
+.tabs { margin-left: auto; display: flex; background: var(--seg-bg); border-radius: 6px; padding: 2px; }
 .tabs button { border: 0; background: transparent; padding: 5px 14px; border-radius: 4px; }
-.tabs button.on { background: #333; color: var(--accent); }
+.tabs button.on { background: var(--seg-on); color: var(--accent-text); box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
 .view { flex: 1; min-height: 0; position: relative; overflow: auto; }
 .empty { padding: 40px; color: var(--muted); }
 
 /* ---------- 蓝图画布 ---------- */
 .blueprint { position: absolute; inset: 0; }
-.blueprint .react-flow { --xy-background-color: #232323; }
+.blueprint .react-flow { --xy-background-color: var(--canvas); }
 .bp-toolbar {
   position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%);
   display: flex; align-items: center; gap: 8px; padding: 6px 8px;
-  background: rgba(20, 20, 20, .92); border: 1px solid #3a3a3a; border-radius: 8px;
+  background: var(--toolbar-bg); border: 1px solid var(--toolbar-border); border-radius: 8px;
+  box-shadow: 0 4px 16px var(--node-shadow);
 }
 .bp-toolbar button {
-  border: 1px solid #444; background: #2b2b2b; border-radius: 5px; padding: 5px 12px;
+  border: 1px solid var(--btn-border); background: var(--btn-bg); border-radius: 5px; padding: 5px 12px;
 }
 .bp-toolbar button:disabled { opacity: .35; cursor: default; }
 .bp-toolbar button.ghost { background: transparent; }
-.bp-progress { min-width: 92px; text-align: center; font-variant-numeric: tabular-nums; color: var(--accent); }
+.bp-progress { min-width: 92px; text-align: center; font-variant-numeric: tabular-nums; color: var(--accent-text); }
 .bp-toolbar .hint { color: var(--muted); font-size: 12px; margin-left: 6px; }
 .bp-toolbar > * { white-space: nowrap; }
 @media (max-width: 1280px) { .bp-toolbar .hint { display: none; } }
 
 /* 节点公共样式 */
 .bp-node {
-  background: #151515; border: 1px solid #0a0a0a; border-radius: 8px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, .55); min-width: 200px; transition: opacity .15s, box-shadow .2s;
+  background: var(--node-bg); border: 1px solid var(--node-border); border-radius: 8px;
+  box-shadow: 0 4px 14px var(--node-shadow); min-width: 200px; transition: opacity .15s, box-shadow .2s;
 }
 .bp-node.dim { opacity: .28; }
 .bp-header {
@@ -138,8 +226,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .result { width: 260px; }
 .result .bp-header { background: linear-gradient(90deg, #a87a1f, #4f3a10); }
 .step.running, .event.running, .result.running { box-shadow: 0 0 0 2px var(--accent), 0 0 24px rgba(232, 163, 61, .45); }
-.step.done .bp-body { color: #8a8a8a; }
-.step.done .step-text strong { color: #a08050; }
+.step.done .bp-body { color: var(--done-text); }
+.step.done .step-text strong { color: var(--done-strong); }
 .step.done .bp-header { background: linear-gradient(90deg, #2f5d35, #1b3320); }
 .step.done.dim { opacity: .28; }
 
@@ -147,14 +235,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .chip { font-size: 11px; font-weight: 500; padding: 1px 6px; border-radius: 10px; background: rgba(0, 0, 0, .35); }
 
 .step-text { padding: 8px 14px 0; line-height: 1.6; }
-.step-text strong { color: var(--accent); }
+.step-text strong { color: var(--accent-text); }
 .step-note {
-  margin: 6px 14px 0; padding: 4px 8px; border-left: 2px solid #555; color: var(--muted); font-size: 12px; line-height: 1.5;
+  margin: 6px 14px 0; padding: 4px 8px; border-left: 2px solid var(--note-border); color: var(--muted); font-size: 12px; line-height: 1.5;
 }
 .step-actions { padding: 10px 14px 0; }
 
 .bp-btn {
-  border: 1px solid #555; background: #2b2b2b; border-radius: 4px; padding: 3px 10px; font-size: 12px;
+  border: 1px solid var(--btn-border); background: var(--btn-bg); border-radius: 4px; padding: 3px 10px; font-size: 12px;
 }
 .bp-btn:hover { border-color: var(--accent); }
 .bp-btn.ghost { background: transparent; color: var(--muted); }
@@ -173,13 +261,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
   font-size: 10px; font-weight: 500; padding: 0 4px; border-radius: 3px;
   background: color-mix(in srgb, var(--pin) 25%, transparent); color: var(--pin);
 }
-.amounts { list-style: none; margin: 0; padding: 0 10px 8px; color: #bbb; font-size: 12px; line-height: 18px; }
+.amounts { list-style: none; margin: 0; padding: 0 10px 8px; color: var(--amount); font-size: 12px; line-height: 18px; }
 .amounts li { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .pure .tiny { padding: 0 10px 6px; }
 
 /* 引脚 */
 .react-flow__handle.pin-data {
-  width: 11px; height: 11px; border-radius: 50%; background: #121212; border: 2px solid var(--pin, #aaa);
+  width: 11px; height: 11px; border-radius: 50%; background: var(--pin-hole); border: 2px solid var(--pin, #aaa);
 }
 .react-flow__handle.pin-data.target { left: 2px; }
 .react-flow__handle.pin-data.source { right: 4px; }
@@ -191,7 +279,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .react-flow__handle.pin-exec.source { right: 4px; }
 
 /* 连线 */
-.react-flow__edge.edge-exec path { stroke: #cfcfcf; stroke-width: 3; }
+.react-flow__edge.edge-exec path { stroke: var(--exec-edge); stroke-width: 3; }
 .react-flow__edge.edge-exec.lit path { stroke: var(--accent); }
 .react-flow__edge.edge-data path { stroke-width: 2; opacity: .75; }
 .react-flow__edge.edge-data.hot path { stroke-width: 3; opacity: 1; }
@@ -200,17 +288,19 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .result-img { display: block; width: calc(100% - 28px); margin: 6px 14px; border-radius: 4px; }
 .kv { display: flex; justify-content: space-between; padding: 3px 14px; font-size: 13px; }
 .kv span:first-child { color: var(--muted); }
-.done-banner { margin: 8px 14px 0; padding: 6px; text-align: center; background: #3b2f12; border-radius: 4px; color: var(--accent); }
+.done-banner { margin: 8px 14px 0; padding: 6px; text-align: center; background: var(--banner-bg); border-radius: 4px; color: var(--accent-text); }
 
-.react-flow__controls button { background: #2b2b2b; border-color: #3a3a3a; fill: #ddd; }
-.react-flow__minimap { background: #1a1a1a; }
+.react-flow__controls { box-shadow: 0 2px 8px var(--node-shadow); }
+.react-flow__controls button { background: var(--btn-bg); border-color: var(--toolbar-border); fill: var(--text); color: var(--text); }
+.react-flow__controls button:hover { background: var(--hover); }
+.react-flow__minimap { background: var(--minimap-bg); }
 
 /* ---------- 图文视图 ---------- */
 .text-view { max-width: 760px; margin: 0 auto; padding: 28px 24px 60px; line-height: 1.75; }
 .text-view h1 { margin: 0 0 4px; }
 .text-view .meta { display: flex; gap: 14px; color: var(--muted); margin: 0 0 16px; }
 .text-view img { max-width: 100%; border-radius: 6px; }
-.gallery img { display: block; width: 100%; max-height: 70vh; object-fit: cover; background: #222; }
+.gallery img { display: block; width: 100%; max-height: 70vh; object-fit: cover; background: var(--img-bg); }
 .gallery.multi {
   display: grid; grid-auto-flow: column; grid-auto-columns: 85%; gap: 8px;
   overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px;
@@ -218,7 +308,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .gallery.multi img { aspect-ratio: 4 / 3; height: auto; scroll-snap-align: start; }
 .inline-img {
   display: block; max-width: min(100%, 520px); max-height: 420px; margin: 8px 0;
-  border-radius: 6px; background: #222; object-fit: contain;
+  border-radius: 6px; background: var(--img-bg); object-fit: contain;
 }
 /* 蓝图节点里的步骤图：缩略显示 */
 .bp-node .inline-img { max-width: 100%; max-height: 180px; width: 100%; object-fit: cover; margin: 6px 0 2px; }
@@ -228,12 +318,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .text-view td { border-bottom: 1px solid var(--line); padding: 6px 8px; }
 .text-view td:first-child { width: 34%; font-weight: 600; }
 .text-view .steps li { margin-bottom: 10px; }
-.text-view .steps strong { color: var(--accent); }
+.text-view .steps strong { color: var(--accent-text); }
 .text-view .step-note { margin-left: 0; }
 
 .source-link { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; }
 .source-link a { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; }
-.source-link a:hover { color: var(--accent); }
+.source-link a:hover { color: var(--accent-text); }
 
 /* ---------- 手机 ---------- */
 @media (max-width: 768px) {
@@ -243,11 +333,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .sidebar {
     position: fixed; z-index: 20; top: 0; bottom: 0; left: 0; width: min(86vw, 320px);
     padding-top: calc(14px + env(safe-area-inset-top));
-    transform: translateX(-100%); transition: transform .22s ease; box-shadow: 0 0 40px rgba(0, 0, 0, .6);
+    transform: translateX(-100%); transition: transform .22s ease; box-shadow: 0 0 40px var(--drawer-shadow);
   }
   .drawer-open .sidebar { transform: none; }
   .backdrop {
-    display: block; position: fixed; inset: 0; z-index: 19; background: rgba(0, 0, 0, .5);
+    display: block; position: fixed; inset: 0; z-index: 19; background: var(--backdrop);
     opacity: 0; pointer-events: none; transition: opacity .22s;
   }
   .drawer-open .backdrop { opacity: 1; pointer-events: auto; }
@@ -265,7 +355,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
     display: flex; align-items: center; justify-content: center; flex: none;
     width: 38px; height: 38px; margin: -4px 0 -4px -4px; border: 0; background: transparent; border-radius: 6px;
   }
-  .menu-btn:active { background: #2b2b2b; }
+  .menu-btn:active { background: var(--hover); }
   .topbar h1 { font-size: 17px; flex: 1; min-width: 0; }
   .topbar-meta { display: none; }
   .tabs button { padding: 7px 12px; }
@@ -288,3 +378,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (max-width: 380px) {
   .bp-toolbar .btn-text { display: none; }
 }
+
+/* 浅色模式下节点标题条稍微提亮，避免在浅色画布上显得过重 */
+:root[data-theme='light'] .step .bp-header { background: linear-gradient(90deg, #3a74b0, #2b5b8e); }
+:root[data-theme='light'] .event .bp-header { background: linear-gradient(90deg, #b8322e, #8a2320); }
+:root[data-theme='light'] .result .bp-header { background: linear-gradient(90deg, #c08a24, #946815); }
+:root[data-theme='light'] .step.done .bp-header { background: linear-gradient(90deg, #3d7a46, #2c5c33); }
+:root[data-theme='light'] .bp-header { text-shadow: 0 1px 1px rgba(0, 0, 0, .35); }
+:root[data-theme='light'] .chip { background: rgba(255, 255, 255, .2); }

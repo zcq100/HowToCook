@@ -14,17 +14,18 @@ import type { Recipe } from '../types'
 import { buildGraph } from '../graph/layout'
 import { GraphCtx, nodeTypes, type GraphState } from '../graph/nodes'
 import { useIsMobile } from '../useMediaQuery'
+import type { Theme } from '../useTheme'
 
 /** 蓝图视图：像 UE 蓝图一样，用执行线串起步骤，原料以数据引脚接入步骤 */
-export default function BlueprintView({ recipe }: { recipe: Recipe }) {
+export default function BlueprintView({ recipe, theme }: { recipe: Recipe; theme: Theme }) {
   return (
     <ReactFlowProvider>
-      <Blueprint key={recipe.id} recipe={recipe} />
+      <Blueprint key={recipe.id} recipe={recipe} theme={theme} />
     </ReactFlowProvider>
   )
 }
 
-function Blueprint({ recipe }: { recipe: Recipe }) {
+function Blueprint({ recipe, theme }: { recipe: Recipe; theme: Theme }) {
   const graph = useMemo(() => buildGraph(recipe), [recipe])
   const [nodes, , onNodesChange] = useNodesState(graph.nodes)
   const [current, setCurrent] = useState(-1)
@@ -123,13 +124,13 @@ function Blueprint({ recipe }: { recipe: Recipe }) {
           fitView
           fitViewOptions={initialView}
           minZoom={0.15}
-          colorMode="dark"
+          colorMode={theme}
           attributionPosition={isMobile ? 'top-right' : 'bottom-right'}
         >
-          <Background id="minor" variant={BackgroundVariant.Lines} gap={16} color="#2c2c2c" />
-          <Background id="major" variant={BackgroundVariant.Lines} gap={128} color="#1a1a1a" lineWidth={1.5} />
+          <Background id="minor" variant={BackgroundVariant.Lines} gap={16} color="var(--grid-minor)" />
+          <Background id="major" variant={BackgroundVariant.Lines} gap={128} color="var(--grid-major)" lineWidth={1.5} />
           {!isMobile && <Controls showInteractive={false} />}
-          {!isMobile && <MiniMap pannable zoomable nodeColor={miniColor} maskColor="rgba(0,0,0,.55)" />}
+          {!isMobile && <MiniMap pannable zoomable nodeColor={miniColor} maskColor={theme === 'light' ? 'rgba(240,238,232,.7)' : 'rgba(0,0,0,.55)'} />}
         </ReactFlow>
         <div className="bp-toolbar">
           <button onClick={() => go(current - 1)} disabled={current < 0} aria-label="上一步">
