@@ -35,3 +35,18 @@ npm run build   # 产物在 dist/
 - 顶栏“分享”会在浏览器里生成一张 1080×1440 的典藏风格分享卡片（`src/shareCard.ts`），带成品图和指向短链的二维码，可保存、系统分享或复制链接。
 - 图标和默认预览图的源文件在 `brand/`（`icon.svg`、`og.html`），`public/` 里是渲染好的 PNG。改了源文件后需要重新渲染。
 - 微信内置浏览器不读取 Open Graph 标签，自定义分享标题和配图需要接入公众号的 JS-SDK。这里只保证页面标题正确，推荐在微信里分享卡片图片。
+
+## 容器镜像
+
+打 `w` 前缀的 tag 时，`.github/workflows/container-web.yml` 会构建镜像并推送到 `ghcr.io/zcq100/howtocook-web`（标签：版本号、原 tag、`latest`；amd64 + arm64）。
+
+```bash
+docker run --rm -p 8080:8080 ghcr.io/zcq100/howtocook-web:latest   # http://localhost:8080
+
+# 本地构建（在仓库根目录执行）
+docker build -f web/Dockerfile -t howtocook-web .
+```
+
+- 镜像 = [static-web-server](https://static-web-server.net)（scratch 基础，约 8MB）+ 构建好的静态站点，约 127MB，其中绝大部分是菜谱照片。
+- 以非 root 用户（UID 65534）监听 8080；`/health` 为健康检查；配置见 `web/container/sws.toml`。
+- 容器里没有 Cloudflare Worker，所以每道菜的链接预览（`/r/<菜谱>` 的 meta 改写）不可用，但短链本身可以正常打开。

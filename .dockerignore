@@ -1,0 +1,12 @@
+# 容器构建（web/Dockerfile）只需要菜谱和 web 源码，其余全部排除，构建上下文尽量小
+*
+!dishes
+!web
+web/node_modules
+web/dist
+web/.cache
+web/public/data
+web/public/images
+web/brand
+web/*.tsbuildinfo
+web/.wrangler

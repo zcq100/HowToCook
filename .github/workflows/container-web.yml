@@ -1,0 +1,74 @@
+# 打 w 前缀的 tag 时，构建 web 版容器镜像并推送到 GitHub Container Registry（ghcr.io）。
+#
+#   git tag -a w1.0.5 -m "web 1.0.5" && git push origin w1.0.5
+#
+# 产物：ghcr.io/<owner>/howtocook-web，标签为版本号（1.0.5）、原 tag（w1.0.5）和 latest；
+# 包含 linux/amd64 与 linux/arm64 两种架构。镜像说明见 web/Dockerfile。
+# 与 deploy-web-cf.yml（Cloudflare 部署）并行，互不依赖。
+name: Web container image
+
+on:
+  push:
+    tags:
+      - 'w[0-9]*'
+      - 'w.[0-9]*'
+
+permissions: {}
+
+concurrency:
+  group: container-web-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write # 推送到 ghcr.io
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/howtocook-web
+          tags: |
+            type=match,pattern=^w\.?(\d.*)$,group=1
+            type=ref,event=tag
+            type=raw,value=latest
+          labels: |
+            org.opencontainers.image.title=菜谱蓝图 web
+            org.opencontainers.image.description=HowToCook 菜谱的蓝图 / 图文 / 烹饪模式阅览器（静态站点，static-web-server）
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: web/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # 复用上次构建的层（npm 依赖等），加快构建
+          cache-from: type=gha,scope=container-web
+          cache-to: type=gha,scope=container-web,mode=max
+
+      - name: Summary
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          {
+            echo "### 已推送镜像"
+            echo '```'
+            echo "$TAGS"
+            echo '```'
+            echo "运行：\`docker run --rm -p 8080:8080 $(echo "$TAGS" | head -1)\`"
+          } >> "$GITHUB_STEP_SUMMARY"

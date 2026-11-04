@@ -1,0 +1,30 @@
+# static-web-server 配置（容器镜像 web/Dockerfile 使用）
+#
+# 默认的缓存策略会把 HTML 缓存 1 天、JSON 缓存 1 小时。发新版本后，带哈希的 JS/CSS 文件名会变，
+# 旧 index.html 若还在浏览器缓存里，就会去请求已不存在的旧文件。所以：
+#   - HTML（含 / 和分享短链 /r/*）与菜谱数据：每次向服务器确认（no-cache，仍可用 304）；
+#   - /assets/*（文件名带内容哈希）：保持一年的长缓存（服务器默认行为）。
+
+[general]
+host = "::"
+port = 8080
+root = "/public"
+# 找不到的路径（如分享短链 /r/<菜谱>）返回 index.html（200），由前端路由处理
+page-fallback = "/public/index.html"
+# /health 健康检查，供 Docker / Kubernetes 探活
+health = true
+compression = true
+cache-control-headers = true
+log-level = "warn"
+
+[advanced]
+
+[[advanced.headers]]
+source = "{/,/index.html,/r/**}"
+[advanced.headers.headers]
+Cache-Control = "no-cache"
+
+[[advanced.headers]]
+source = "/data/**"
+[advanced.headers.headers]
+Cache-Control = "no-cache"
