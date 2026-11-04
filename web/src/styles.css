@@ -55,12 +55,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .count { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
 .list { list-style: none; margin: 0 -12px; padding: 0; overflow-y: auto; flex: 1; }
 .list button {
-  display: flex; justify-content: space-between; align-items: center; width: 100%;
-  border: 0; background: transparent; padding: 7px 12px; text-align: left;
+  display: flex; flex-direction: column; gap: 3px; width: 100%;
+  border: 0; background: transparent; padding: 7px 14px 7px 15px; text-align: left;
 }
-.list button:hover { background: #262626; }
+.list button:hover { background: #242424; }
 .list button.on { background: #2d2a22; box-shadow: inset 3px 0 var(--accent); }
-.list .stars { font-size: 10px; opacity: .75; }
+.list .name {
+  font-size: 14px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.list button.on .name { color: var(--accent); font-weight: 600; }
+.list .meta { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; color: var(--muted); }
+.list .meta-text { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.pips { display: inline-flex; gap: 3px; flex: none; }
+.pips i { width: 6px; height: 6px; border-radius: 50%; background: #4a4a4a; }
+.pips i.on { background: var(--accent); }
+.list button:not(.on) .pips i.on { background: #b5843a; }
 
 .main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .topbar {

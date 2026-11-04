@@ -80,9 +80,19 @@ export default function App() {
         <ul className="list">
           {filtered.map((r) => (
             <li key={r.id}>
-              <button className={r.id === recipe?.id ? 'on' : ''} onClick={() => navigate(route.view, r.id)}>
+              <button
+                className={r.id === recipe?.id ? 'on' : ''}
+                onClick={() => navigate(route.view, r.id)}
+                title={r.name}
+              >
                 <span className="name">{r.name}</span>
-                <span className="stars small">{stars(r.difficulty)}</span>
+                <span className="meta">
+                  <span className="meta-text">
+                    {category === 'all' && <>{r.categoryName} · </>}
+                    {r.calories ?? '热量未知'}
+                  </span>
+                  <Difficulty value={r.difficulty} />
+                </span>
               </button>
             </li>
           ))}
@@ -116,5 +126,16 @@ export default function App() {
         )}
       </main>
     </div>
+  )
+}
+
+/** 难度用 5 个等宽圆点表示，避免 ★☆ 在不同字体下宽度不一致导致对不齐 */
+function Difficulty({ value }: { value: number }) {
+  return (
+    <span className="pips" role="img" aria-label={`难度 ${value} / 5`} title={`难度 ${value} / 5`}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <i key={i} className={i <= value ? 'on' : ''} />
+      ))}
+    </span>
   )
 }
