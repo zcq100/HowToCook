@@ -468,8 +468,9 @@ button { cursor: pointer; }
  * ========================================================== */
 :root[data-theme='paper'] {
   color-scheme: light;
+  /* 先用本机已有的中文宋体（桌面系统），都没有时（iOS / Android）用随站点提供的 Noto Serif SC 网络字体 */
   --font-display: Georgia, 'Source Han Serif SC', 'Source Han Serif CN', '思源宋体 CN', 'Noto Serif CJK SC', 'Noto Serif SC',
-    'Songti SC', STSong, SimSun, serif;
+    'Songti SC', STSong, SimSun, 'Noto Serif SC Variable', serif;
   --gold: #a7843f;
   --gold-soft: rgba(167, 132, 63, .45);
   --wine: #7a2e26;

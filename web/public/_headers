@@ -1,0 +1,5 @@
+# Cloudflare Workers 静态资源响应头
+# /assets/ 下是 Vite 构建产物（JS、CSS、字体），文件名带内容哈希，内容变了文件名就会变，可以永久缓存。
+# 尤其是典藏主题的中文衬线字体：首次访问要下载几十个分片，之后应直接走浏览器缓存，不再逐个回源校验。
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
