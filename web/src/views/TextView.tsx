@@ -16,9 +16,13 @@ export default function TextView({ recipe }: { recipe: Recipe }) {
           {recipe.calories && <span>{recipe.calories}</span>}
           <span>{recipe.categoryName}</span>
         </p>
-        {recipe.images.map((src) => (
-          <img key={src} src={src} alt={recipe.name} />
-        ))}
+        {recipe.images.length > 0 && (
+          <div className={'gallery' + (recipe.images.length > 1 ? ' multi' : '')}>
+            {recipe.images.map((src, i) => (
+              <img key={src} src={src} alt={`${recipe.name} ${i + 1}`} loading={i ? 'lazy' : 'eager'} decoding="async" />
+            ))}
+          </div>
+        )}
         {recipe.description && <p className="desc">{recipe.description}</p>}
       </header>
 
@@ -58,7 +62,9 @@ export default function TextView({ recipe }: { recipe: Recipe }) {
           <h2>附加内容</h2>
           <ul>
             {recipe.tips.map((t, i) => (
-              <li key={i}>{t}</li>
+              <li key={i}>
+                <Inline text={t} />
+              </li>
             ))}
           </ul>
         </section>

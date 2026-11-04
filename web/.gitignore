@@ -4,3 +4,4 @@ public/data/
 public/images/
 *.tsbuildinfo
 .wrangler/
+.cache/
