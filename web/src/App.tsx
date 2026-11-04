@@ -9,11 +9,13 @@ import { useFavorites } from './useFavorites'
 import { CategoryIcon } from './categoryIcons'
 import BlueprintView from './views/BlueprintView'
 import TextView from './views/TextView'
+import CookView from './views/CookView'
 
 /** 阅览方式注册表：新增视图只需在这里加一项 */
 const VIEWS: { id: string; label: string; component: ComponentType<{ recipe: Recipe; theme: Theme }> }[] = [
   { id: 'blueprint', label: '蓝图', component: BlueprintView },
   { id: 'text', label: '图文', component: TextView },
+  { id: 'cook', label: '烹饪', component: CookView },
 ]
 
 /** 分类筛选里“收藏夹”的特殊值 */

@@ -756,3 +756,129 @@ button { cursor: pointer; }
   .source-link a { display: none; }
   .source-link .print-only { display: inline; color: var(--muted); font-size: 11px; }
 }
+
+/* ==========================================================
+ * 烹饪模式：一屏一步，大字号，适合放在灶台边
+ * ========================================================== */
+.cook { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.cook-progress { display: flex; gap: 3px; padding: 10px 16px 0; flex: none; }
+.cook-progress .seg {
+  flex: 1; height: 5px; padding: 0; border: 0; border-radius: 3px; background: var(--line); cursor: pointer;
+}
+.cook-progress .seg.edge { flex: .5; }
+.cook-progress .seg.done { background: color-mix(in srgb, var(--accent) 55%, transparent); }
+.cook-progress .seg.on { background: var(--accent); }
+
+.cook-stage { flex: 1; min-height: 0; overflow-y: auto; padding: 20px 16px 24px; overscroll-behavior: contain; }
+.cook-card { max-width: 760px; margin: 0 auto; font-family: var(--font-display); }
+.cook-kicker {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 14px;
+  font-family: var(--font-ui); font-size: 14px; font-weight: 500; color: var(--accent-text);
+}
+.cook-heat { font-weight: 400; color: var(--muted); }
+.cook-title { margin: 0 0 6px; font-size: 30px; font-weight: 600; }
+.cook-sub { color: var(--muted); font-size: 15px; line-height: 1.7; }
+.cook-text { font-size: 25px; line-height: 1.75; letter-spacing: .01em; }
+.cook-text strong { color: var(--accent-text); }
+.cook-text .inline-img, .cook-note .inline-img { max-height: 46vh; margin: 14px 0; }
+.cook-note {
+  margin-top: 14px; padding: 8px 14px; border-left: 3px solid var(--note-border);
+  color: var(--muted); font-size: 17px; line-height: 1.7;
+}
+
+.cook-timers { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+.cook-timer-btn {
+  padding: 12px 18px; border: 1px solid var(--accent); border-radius: 999px; background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent-text); font-family: var(--font-ui); font-size: 17px; font-weight: 500;
+}
+.cook-timer-btn:active { transform: scale(.97); }
+
+.cook-uses { margin-top: 28px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--font-ui); }
+.cook-uses h3 { margin: 0 0 10px; font-size: 13px; font-weight: 500; color: var(--muted); }
+.cook-uses ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.cook-uses li {
+  display: inline-flex; align-items: baseline; gap: 6px; padding: 6px 12px; border-radius: 6px;
+  background: var(--hover); font-size: 16px;
+}
+.cook-uses li em { font-style: normal; color: var(--muted); font-size: 14px; }
+.cook-uses .cook-tips { display: block; }
+.cook-uses .cook-tips li { display: list-item; margin: 0 0 6px 1.2em; padding: 0; background: none; list-style: disc; }
+
+/* 准备页：备料勾选 */
+.prep-list { list-style: none; margin: 18px 0; padding: 0; }
+.prep-list label {
+  display: flex; align-items: baseline; gap: 12px; padding: 12px 4px; border-bottom: 1px solid var(--line);
+  font-size: 19px; cursor: pointer;
+}
+.prep-list input { width: 20px; height: 20px; flex: none; accent-color: var(--accent); transform: translateY(3px); }
+.prep-name { flex: 1; min-width: 0; }
+.prep-amount { flex: none; max-width: 50%; text-align: right; color: var(--muted); font-size: 16px; }
+.prep-list label.on .prep-name, .prep-list label.on .prep-amount { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--accent); }
+
+.cook-primary, .cook-secondary {
+  display: block; width: 100%; margin-top: 20px; padding: 14px; border-radius: 8px;
+  font-family: var(--font-ui); font-size: 17px; font-weight: 500;
+}
+.cook-primary { border: 0; background: var(--accent); color: var(--on-accent); }
+.cook-secondary { border: 1px solid var(--line); background: transparent; }
+.cook-done { text-align: center; }
+.cook-done .cook-uses { text-align: left; }
+.cook-done-img { display: block; max-width: 100%; max-height: 50vh; margin: 16px auto; border-radius: 8px; }
+
+/* 计时器托盘 */
+.timer-tray { flex: none; display: flex; flex-direction: column; gap: 6px; padding: 0 16px 8px; max-height: 32vh; overflow-y: auto; }
+.timer-chip {
+  position: relative; overflow: hidden; display: flex; align-items: center; gap: 10px;
+  max-width: 760px; width: 100%; margin: 0 auto; padding: 8px 10px 8px 14px;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--panel);
+}
+.timer-bar { position: absolute; inset: 0 auto 0 0; background: color-mix(in srgb, var(--accent) 14%, transparent); transition: width .25s linear; }
+.timer-chip > :not(.timer-bar) { position: relative; }
+.timer-clock { font-family: var(--font-ui); font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 4.2em; }
+.timer-label { flex: 1; min-width: 0; color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.timer-chip button { flex: none; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--btn-bg); font-size: 13px; }
+.timer-chip.paused .timer-clock { color: var(--muted); }
+.timer-chip.done { border-color: var(--accent); animation: timer-flash 1s ease-in-out infinite; }
+.timer-chip.done .timer-clock { color: var(--accent-text); }
+@keyframes timer-flash { 50% { background: color-mix(in srgb, var(--accent) 28%, var(--panel)); } }
+@media (prefers-reduced-motion: reduce) { .timer-chip.done { animation: none; } }
+
+/* 底部翻页栏：大按钮，方便手上不干净时点 */
+.cook-nav {
+  flex: none; display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: var(--panel);
+}
+.cook-nav > button { min-height: 52px; border-radius: 10px; font-size: 18px; font-weight: 500; }
+.cook-prev { width: 64px; border: 1px solid var(--line); background: var(--btn-bg); }
+.cook-next { flex: 1; max-width: 260px; margin-left: auto; border: 0; background: var(--accent); color: var(--on-accent); }
+.cook-nav > button:disabled { opacity: .35; }
+.cook-pos { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+.cook-pos-main { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cook-toggles { display: flex; gap: 6px; }
+.cook-toggle { padding: 2px 9px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--muted); font-size: 12px; }
+.cook-toggle.on { border-color: var(--accent); color: var(--accent-text); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.cook-toggle:disabled { opacity: .4; }
+
+@media (max-width: 768px) {
+  .cook-text { font-size: 22px; }
+  .cook-title { font-size: 26px; }
+  .cook-stage { padding: 16px 16px 20px; }
+}
+
+/* 典藏：卡片式步骤 */
+:root[data-theme='paper'] .cook-stage { background: transparent; }
+:root[data-theme='paper'] .cook-card {
+  padding: 28px 32px; background: #fffcf5 var(--paper-grain); color: var(--body-ink);
+  border: 1px solid var(--gold-soft); outline: 1px solid var(--gold-soft); outline-offset: -7px;
+  box-shadow: 0 2px 6px rgba(70, 50, 20, .08), 0 16px 40px rgba(70, 50, 20, .16);
+}
+:root[data-theme='paper'] .cook-kicker { color: var(--wine); letter-spacing: .06em; }
+:root[data-theme='paper'] .cook-text strong { color: var(--wine); }
+:root[data-theme='paper'] .cook-nav { background: #fbf6eb var(--paper-grain); border-top-color: rgba(167, 132, 63, .35); }
+:root[data-theme='paper'] .cook-next, :root[data-theme='paper'] .cook-primary { background: var(--wine); color: #fbf3e2; }
+:root[data-theme='paper'] .timer-chip { background: #fffcf5; }
+@media (max-width: 768px) {
+  :root[data-theme='paper'] .cook-card { padding: 22px 18px; outline-offset: -5px; }
+}
+
+@media print { .cook-nav, .timer-tray, .cook-progress { display: none !important; } }

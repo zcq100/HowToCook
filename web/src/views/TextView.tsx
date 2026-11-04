@@ -5,6 +5,7 @@ import { Inline, stars } from '../inline'
 import { REPO_URL, sourceUrl } from '../config'
 import { GitHubIcon } from '../icons'
 import { CategoryIcon } from '../categoryIcons'
+import { trimName } from '../recipeText'
 
 /** 传统图文视图：作为对照，也方便后续扩展更多阅览方式 */
 export default function TextView({ recipe }: { recipe: Recipe }) {
@@ -87,13 +88,3 @@ export default function TextView({ recipe }: { recipe: Recipe }) {
   )
 }
 
-/**
- * 用量行通常以原料名开头（“可乐 500ml”），在原料表里重复显示名称没有意义。
- * 若开头的词与原料名互相包含（“鸡翅 10 只” / 原料“鸡翅中”），就去掉它。
- */
-function trimName(name: string, amount: string) {
-  const m = amount.match(/^([^\s:：\d]+)[\s:：]+(.+)$/)
-  if (!m) return amount
-  const base = name.replace(/[（(][^）)]*[）)]/g, '')
-  return base.includes(m[1]) || m[1].includes(base) ? m[2] : amount
-}

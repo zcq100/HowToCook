@@ -83,6 +83,9 @@ const SYNONYMS = {
   酱油: ['生抽'], 鸡精: ['味精'], 味精: ['鸡精'],
 }
 
+// 原料名常见的修饰性前缀，截断原料名生成别名时跳过
+const GENERIC_PREFIXES = new Set(['食用', '新鲜', '冷冻', '干货', '优质', '有机', '普通', '少许', '适量', '鲜榨', '纯净', '原味', '大号', '小号', '中号'])
+
 const stripComments = (s) => s.replace(/<!--[\s\S]*?-->/g, '')
 const stripMd = (s) =>
   s
@@ -137,8 +140,13 @@ function nameAliases(name) {
   const aliases = new Set()
   for (const p of parts) {
     aliases.add(p)
-    // “鸡翅中” -> “鸡翅”
-    if (p.length >= 3) for (let len = p.length - 1; len >= 2; len--) aliases.add(p.slice(0, len))
+    // “鸡翅中” -> “鸡翅”；但 “食用盐” 截出的 “食用”、“新鲜菜心” 截出的 “新鲜” 这类修饰词不能当别名，
+    // 否则 “食用盐” 会匹配到 “食用油 15ml”
+    if (p.length >= 3)
+      for (let len = p.length - 1; len >= 2; len--) {
+        const prefix = p.slice(0, len)
+        if (!GENERIC_PREFIXES.has(prefix)) aliases.add(prefix)
+      }
     const last = p.at(-1)
     if (SINGLE_CHAR_ALIASES.includes(last)) aliases.add(last)
     for (const c of CONTAINS_ALIASES) if (p.includes(c)) aliases.add(c)
@@ -149,6 +157,9 @@ function nameAliases(name) {
 
 const isTool = (name) =>
   !NOT_TOOL.some((n) => name.includes(n)) && TOOL_KEYWORDS.some((k) => name.includes(k))
+
+// 用量行里数量之前的“名称部分”：“新鲜空心菜 250 g” -> “新鲜空心菜”
+const calcHead = (text) => text.split(/[\d\s=:：（(]/)[0]
 
 // 从计算条目中取出名称部分：“可乐 500ml” -> “可乐”
 const calcName = (text) => stripMd(text).split(/[\s\d:：（(约]/)[0].trim()
@@ -201,11 +212,14 @@ function parseRecipe(file) {
   const usedCalc = new Set()
   const ingredients = expandIngredients(rawIngredients).map(({ label, tool }, idx) => {
     const aliases = nameAliases(label)
-    const qty = calcItems.filter((c, ci) => {
-      const hit = aliases.some((a) => a.length >= 2 && c.includes(a)) || c.startsWith(aliases.at(-1) ?? '\u0000')
-      if (hit) usedCalc.add(ci)
-      return hit
-    })
+    // 优先匹配“名称部分”（数量之前）含原料名的用量行；都不匹配时才退回到整行包含。
+    // 这样 “食用油 300ml（土豆能浮在油上面即可）” 不会被算作土豆的用量
+    const matches = (text) =>
+      aliases.some((a) => a.length >= 2 && text.includes(a)) || text.startsWith(aliases.at(-1) ?? '\u0000')
+    let hits = calcItems.map((c, ci) => [c, ci]).filter(([c]) => matches(calcHead(c)))
+    if (!hits.length) hits = calcItems.map((c, ci) => [c, ci]).filter(([c]) => matches(c))
+    hits.forEach(([, ci]) => usedCalc.add(ci))
+    const qty = hits.map(([c]) => c)
     const kind = tool || isTool(label) ? 'tool' : 'ingredient'
     return { id: `i${idx}`, name: label, kind, amounts: qty, aliases }
   })
