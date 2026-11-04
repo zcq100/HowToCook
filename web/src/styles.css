@@ -137,6 +137,19 @@ button { cursor: pointer; }
 }
 .theme-btn:hover { color: var(--text); }
 .theme-picker { position: relative; display: flex; }
+
+/* 收藏 */
+.fav-btn {
+  display: inline-flex; align-items: center; gap: 4px; flex: none; align-self: center;
+  padding: 4px 10px 4px 7px; border: 1px solid var(--line); border-radius: 999px;
+  background: transparent; color: var(--muted); font-size: 13px; transition: color .15s, border-color .15s, background .15s;
+}
+.fav-btn:hover { color: var(--accent-text); border-color: var(--accent); }
+.fav-btn.on { color: var(--accent-text); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.fav-btn svg { width: 16px; height: 16px; }
+.cats .fav-chip { display: inline-flex; align-items: center; gap: 4px; }
+.cats .fav-chip .chip-count { font-variant-numeric: tabular-nums; opacity: .75; }
+.fav-mark { display: inline-flex; flex: none; color: var(--accent); }
 .theme-menu-backdrop { position: fixed; inset: 0; z-index: 30; }
 .theme-menu {
   position: absolute; z-index: 31; top: calc(100% + 8px); right: -8px; min-width: 132px;
@@ -173,9 +186,8 @@ button { cursor: pointer; }
 }
 .list button:hover { background: var(--hover); }
 .list button.on { background: var(--selected); box-shadow: inset 3px 0 var(--accent); }
-.list .name {
-  font-size: 14px; line-height: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
+.list .name { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 14px; line-height: 20px; }
+.list .name-text { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .list button.on .name { color: var(--accent-text); font-weight: 600; }
 .list .meta { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; color: var(--muted); }
 .list .meta-text { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -377,6 +389,8 @@ button { cursor: pointer; }
   .topbar h1 { font-size: 17px; flex: 1; min-width: 0; }
   .topbar-meta { display: none; }
   .tabs button { padding: 7px 12px; }
+  .fav-btn { padding: 7px; border-color: transparent; }
+  .fav-btn .fav-label { display: none; }
 
   /* 蓝图：底部工具栏铺满，按钮加大 */
   .bp-toolbar {
@@ -484,6 +498,9 @@ button { cursor: pointer; }
 :root[data-theme='paper'] .tabs { border-radius: 2px; }
 :root[data-theme='paper'] .tabs button { border-radius: 1px; letter-spacing: .1em; }
 :root[data-theme='paper'] .tabs button.on { color: var(--wine); }
+:root[data-theme='paper'] .fav-btn { border-radius: 2px; letter-spacing: .08em; }
+:root[data-theme='paper'] .fav-btn.on { color: var(--wine); border-color: var(--wine); background: rgba(122, 46, 38, .06); }
+:root[data-theme='paper'] .fav-mark { color: var(--wine); }
 
 /* 图文视图：一张带双线边框的菜单卡 */
 :root[data-theme='paper'] .text-view {

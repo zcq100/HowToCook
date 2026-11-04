@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState, type ComponentType } from 'react'
 import type { Recipe } from './types'
 import { stars } from './inline'
 import { REPO_URL } from './config'
-import { AutoThemeIcon, GitHubIcon, MenuIcon, MoonIcon, PaperIcon, SunIcon } from './icons'
-import { THEME_LABEL, THEME_ORDER, useTheme, type Theme, type ThemePref } from './useTheme'
+import { BookmarkIcon, GitHubIcon, MenuIcon, MoonIcon, PaperIcon, SunIcon } from './icons'
+import { THEME_LABEL, THEME_ORDER, useTheme, type Theme } from './useTheme'
+import { useFavorites } from './useFavorites'
 import BlueprintView from './views/BlueprintView'
 import TextView from './views/TextView'
 
@@ -12,6 +13,9 @@ const VIEWS: { id: string; label: string; component: ComponentType<{ recipe: Rec
   { id: 'blueprint', label: '蓝图', component: BlueprintView },
   { id: 'text', label: '图文', component: TextView },
 ]
+
+/** 分类筛选里“收藏夹”的特殊值 */
+const FAVORITES = '__favorites__'
 
 function readHash() {
   const [view, ...rest] = decodeURIComponent(location.hash.slice(1)).split('/')
@@ -25,7 +29,8 @@ export default function App() {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<string>('all')
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const { pref, theme, setPref } = useTheme()
+  const { theme, setTheme } = useTheme()
+  const favorites = useFavorites()
   const [themeMenu, setThemeMenu] = useState(false)
 
   useEffect(() => {
@@ -49,14 +54,26 @@ export default function App() {
     return [...m]
   }, [recipes])
 
+  // 只统计仍然存在的菜谱（菜谱改名 / 删除后，旧收藏自动忽略）
+  const favSet = useMemo(() => new Set(favorites.ids), [favorites.ids])
+  const favCount = useMemo(() => (recipes ?? []).filter((r) => favSet.has(r.id)).length, [recipes, favSet])
+
+  // 收藏夹清空后，退回“全部”
+  useEffect(() => {
+    if (category === FAVORITES && recipes && favCount === 0) setCategory('all')
+  }, [category, favCount, recipes])
+
   const filtered = useMemo(() => {
     const q = query.trim()
-    return (recipes ?? []).filter(
+    const list = (recipes ?? []).filter(
       (r) =>
-        (category === 'all' || r.category === category) &&
+        (category === 'all' || r.category === category || (category === FAVORITES && favSet.has(r.id))) &&
         (!q || r.name.includes(q) || r.ingredients.some((i) => i.name.includes(q))),
     )
-  }, [recipes, query, category])
+    // 收藏夹按收藏时间排序，最近收藏的在前
+    if (category === FAVORITES) list.sort((a, b) => favorites.ids.indexOf(a.id) - favorites.ids.indexOf(b.id))
+    return list
+  }, [recipes, query, category, favSet, favorites.ids])
 
   const recipe = recipes?.find((r) => r.id === route.id) ?? recipes?.find((r) => r.name === '可乐鸡翅') ?? recipes?.[0]
   const View = VIEWS.find((v) => v.id === route.view)!.component
@@ -74,27 +91,27 @@ export default function App() {
               <button
                 className="theme-btn"
                 onClick={() => setThemeMenu((v) => !v)}
-                title={`主题：${THEME_LABEL[pref]}`}
-                aria-label={`主题：${THEME_LABEL[pref]}`}
+                title={`主题：${THEME_LABEL[theme]}`}
+                aria-label={`主题：${THEME_LABEL[theme]}`}
                 aria-haspopup="menu"
                 aria-expanded={themeMenu}
               >
-                <ThemeIcon pref={pref} />
+                <ThemeIcon theme={theme} />
               </button>
               {themeMenu && (
                 <>
                   <div className="theme-menu-backdrop" onClick={() => setThemeMenu(false)} />
                   <ul className="theme-menu" role="menu">
-                    {THEME_ORDER.map((p) => (
-                      <li key={p}>
+                    {THEME_ORDER.map((t) => (
+                      <li key={t}>
                         <button
                           role="menuitemradio"
-                          aria-checked={p === pref}
-                          className={p === pref ? 'on' : ''}
-                          onClick={() => (setPref(p), setThemeMenu(false))}
+                          aria-checked={t === theme}
+                          className={t === theme ? 'on' : ''}
+                          onClick={() => (setTheme(t), setThemeMenu(false))}
                         >
-                          <ThemeIcon pref={p} />
-                          {THEME_LABEL[p]}
+                          <ThemeIcon theme={t} />
+                          {THEME_LABEL[t]}
                         </button>
                       </li>
                     ))}
@@ -114,6 +131,15 @@ export default function App() {
           onChange={(e) => setQuery(e.target.value)}
         />
         <div className="cats">
+          {favCount > 0 && (
+            <button
+              className={'fav-chip' + (category === FAVORITES ? ' on' : '')}
+              onClick={() => setCategory(FAVORITES)}
+            >
+              <BookmarkIcon filled size={13} />
+              收藏夹 <span className="chip-count">{favCount}</span>
+            </button>
+          )}
           <button className={category === 'all' ? 'on' : ''} onClick={() => setCategory('all')}>
             全部
           </button>
@@ -132,10 +158,17 @@ export default function App() {
                 onClick={() => navigate(route.view, r.id)}
                 title={r.name}
               >
-                <span className="name">{r.name}</span>
+                <span className="name">
+                  <span className="name-text">{r.name}</span>
+                  {favSet.has(r.id) && category !== FAVORITES && (
+                    <span className="fav-mark" aria-label="已收藏">
+                      <BookmarkIcon filled size={12} />
+                    </span>
+                  )}
+                </span>
                 <span className="meta">
                   <span className="meta-text">
-                    {category === 'all' && <>{r.categoryName} · </>}
+                    {(category === 'all' || category === FAVORITES) && <>{r.categoryName} · </>}
                     {r.calories ?? '热量未知'}
                   </span>
                   <Difficulty value={r.difficulty} />
@@ -160,6 +193,15 @@ export default function App() {
                 <MenuIcon />
               </button>
               <h1>{recipe.name}</h1>
+              <button
+                className={'fav-btn' + (favSet.has(recipe.id) ? ' on' : '')}
+                onClick={() => favorites.toggle(recipe.id)}
+                aria-pressed={favSet.has(recipe.id)}
+                title={favSet.has(recipe.id) ? '取消收藏' : '收藏这道菜'}
+              >
+                <BookmarkIcon filled={favSet.has(recipe.id)} />
+                <span className="fav-label">{favSet.has(recipe.id) ? '已收藏' : '收藏'}</span>
+              </button>
               <span className="topbar-meta">
                 <span className="stars">{stars(recipe.difficulty)}</span>
                 {recipe.calories && <span className="muted">{recipe.calories}</span>}
@@ -196,9 +238,8 @@ function Difficulty({ value }: { value: number }) {
   )
 }
 
-function ThemeIcon({ pref }: { pref: ThemePref }) {
-  if (pref === 'light') return <SunIcon />
-  if (pref === 'dark') return <MoonIcon />
-  if (pref === 'paper') return <PaperIcon />
-  return <AutoThemeIcon />
+function ThemeIcon({ theme }: { theme: Theme }) {
+  if (theme === 'light') return <SunIcon />
+  if (theme === 'dark') return <MoonIcon />
+  return <PaperIcon />
 }

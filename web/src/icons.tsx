@@ -43,10 +43,9 @@ export const PaperIcon = () => (
   </svg>
 )
 
-/** 半明半暗的圆：表示“跟随系统” */
-export const AutoThemeIcon = () => (
-  <svg {...iconProps}>
-    <circle cx="10" cy="10" r="7" />
-    <path d="M10 3a7 7 0 0 1 0 14z" fill="currentColor" stroke="none" />
+/** 书签：收藏。filled 表示已收藏 */
+export const BookmarkIcon = ({ filled = false, size = 18 }: { filled?: boolean; size?: number }) => (
+  <svg {...iconProps} width={size} height={size} fill={filled ? 'currentColor' : 'none'}>
+    <path d="M5.5 3h9a.5.5 0 0 1 .5.5V17l-5-3.4L5 17V3.5a.5.5 0 0 1 .5-.5z" />
   </svg>
 )

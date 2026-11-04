@@ -1,58 +1,45 @@
-import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
-export type ThemePref = 'system' | 'light' | 'dark' | 'paper'
-export type Theme = 'light' | 'dark' | 'paper'
-const FIXED: Theme[] = ['light', 'dark', 'paper']
+export type Theme = 'paper' | 'light' | 'dark'
+
+export const THEME_ORDER: Theme[] = ['paper', 'light', 'dark']
+export const THEME_LABEL: Record<Theme, string> = { paper: '典藏', light: '浅色', dark: '深色' }
+/** 未选择过主题（或保存的值已失效，如旧版的“跟随系统”）时使用 */
+export const DEFAULT_THEME: Theme = 'paper'
 
 const STORAGE_KEY = 'theme'
-const query = '(prefers-color-scheme: light)'
 const META_COLORS: Record<Theme, string> = { dark: '#1e1e1e', light: '#ffffff', paper: '#f6efe0' }
 
 // 隐私模式等场景下 localStorage 可能不可用，此时只是不记住选择
-function readPref(): ThemePref {
+function readTheme(): Theme {
   try {
     const v = localStorage.getItem(STORAGE_KEY)
-    return FIXED.includes(v as Theme) ? (v as Theme) : 'system'
+    return THEME_ORDER.includes(v as Theme) ? (v as Theme) : DEFAULT_THEME
   } catch {
-    return 'system'
+    return DEFAULT_THEME
   }
 }
 
-const systemTheme = (): Theme => (window.matchMedia(query).matches ? 'light' : 'dark')
-
-/** 主题偏好：默认跟随系统，用户手动选择后保存在 localStorage */
+/** 主题：默认“典藏”，用户选择后保存在 localStorage */
 export function useTheme() {
-  const [pref, setPrefState] = useState<ThemePref>(readPref)
-  const system = useSyncExternalStore(
-    (cb) => {
-      const mql = window.matchMedia(query)
-      mql.addEventListener('change', cb)
-      return () => mql.removeEventListener('change', cb)
-    },
-    systemTheme,
-  )
-  const theme: Theme = pref === 'system' ? system : pref
+  const [theme, setThemeState] = useState<Theme>(readTheme)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', META_COLORS[theme])
   }, [theme])
 
-  const setPref = useCallback((p: ThemePref) => {
+  const setTheme = useCallback((t: Theme) => {
     try {
-      if (p === 'system') localStorage.removeItem(STORAGE_KEY)
-      else localStorage.setItem(STORAGE_KEY, p)
+      localStorage.setItem(STORAGE_KEY, t)
     } catch {
       /* 忽略 */
     }
-    setPrefState(p)
+    setThemeState(t)
   }, [])
 
-  return { pref, theme, setPref }
+  return { theme, setTheme }
 }
-
-export const THEME_ORDER: ThemePref[] = ['system', 'light', 'dark', 'paper']
-export const THEME_LABEL: Record<ThemePref, string> = { system: '跟随系统', light: '浅色', dark: '深色', paper: '典藏' }
 
 /** React Flow 只区分明暗 */
 export const flowColorMode = (t: Theme) => (t === 'dark' ? 'dark' : 'light')
