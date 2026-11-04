@@ -2,7 +2,7 @@ import { createContext, memo, useContext } from 'react'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import type { Ingredient, Recipe, Step } from '../types'
 import { Inline, stars } from '../inline'
-import { ingredientColor } from './layout'
+import { ingredientColor, type Direction } from './layout'
 
 /** 图中的交互状态：当前执行到第几步、鼠标悬停 / 选中的节点 */
 export interface GraphState {
@@ -10,26 +10,43 @@ export interface GraphState {
   focus: string | null
   related: Set<string>
   setCurrent: (n: number) => void
+  dir: Direction
 }
 export const GraphCtx = createContext<GraphState>({
   current: -1,
   focus: null,
   related: new Set(),
   setCurrent: () => {},
+  dir: 'LR',
 })
 
 const dimClass = (g: GraphState, id: string) => (g.focus && !g.related.has(id) ? ' dim' : '')
 
+/**
+ * 执行引脚。LR 时放在“执行”行的左右两端；TB 时由 RowPins/NodePins 放到节点上下边缘。
+ */
 function ExecPin({ type }: { type: 'source' | 'target' }) {
+  const { dir } = useContext(GraphCtx)
+  const position =
+    dir === 'TB' ? (type === 'source' ? Position.Bottom : Position.Top) : type === 'source' ? Position.Right : Position.Left
   return (
     <Handle
       type={type}
       id={type === 'source' ? 'exec-out' : 'exec-in'}
-      position={type === 'source' ? Position.Right : Position.Left}
+      position={position}
       className="pin-exec"
       isConnectable={false}
     />
   )
+}
+
+/** LR：引脚放在“执行”行里 */
+function RowPin({ type }: { type: 'source' | 'target' }) {
+  return useContext(GraphCtx).dir === 'LR' ? <ExecPin type={type} /> : null
+}
+/** TB：引脚直接挂在节点上，定位到上下边缘中点 */
+function NodePin({ type }: { type: 'source' | 'target' }) {
+  return useContext(GraphCtx).dir === 'TB' ? <ExecPin type={type} /> : null
 }
 
 export const EventNode = memo(({ id, data }: NodeProps) => {
@@ -37,6 +54,7 @@ export const EventNode = memo(({ id, data }: NodeProps) => {
   const recipe = data.recipe as Recipe
   return (
     <div className={'bp-node event' + dimClass(g, id) + (g.current === -1 ? ' running' : '')}>
+      <NodePin type="source" />
       <div className="bp-header">
         <span className="bp-icon">◆</span> 事件 · 开始烹饪
       </div>
@@ -44,7 +62,7 @@ export const EventNode = memo(({ id, data }: NodeProps) => {
         <div className="bp-row exec-row">
           <span />
           <span className="pin-label">执行</span>
-          <ExecPin type="source" />
+          <RowPin type="source" />
         </div>
         {recipe.servingsNote && <p className="muted small">{recipe.servingsNote}</p>}
         <button className="bp-btn nodrag" onClick={() => g.setCurrent(0)}>
@@ -94,6 +112,8 @@ export const StepNode = memo(({ id, data }: NodeProps) => {
   const uses = step.uses.map((u) => recipe.ingredients.find((i) => i.id === u)!).filter(Boolean)
   return (
     <div className={'bp-node step' + state + dimClass(g, id)}>
+      <NodePin type="target" />
+      <NodePin type="source" />
       <div className="bp-header">
         <span className="bp-icon">ƒ</span> 步骤 {step.index}
         <span className="chips">
@@ -104,11 +124,13 @@ export const StepNode = memo(({ id, data }: NodeProps) => {
         </span>
       </div>
       <div className="bp-body">
-        <div className="bp-row exec-row">
-          <ExecPin type="target" />
-          <span className="pin-label" />
-          <ExecPin type="source" />
-        </div>
+        {g.dir === 'LR' && (
+          <div className="bp-row exec-row">
+            <ExecPin type="target" />
+            <span className="pin-label" />
+            <ExecPin type="source" />
+          </div>
+        )}
         {uses.map((ing) => (
           <div className="bp-row" key={ing.id} style={{ ['--pin' as string]: ingredientColor(recipe, ing.id) }}>
             <Handle
@@ -151,12 +173,13 @@ export const ResultNode = memo(({ id, data }: NodeProps) => {
   const finished = g.current >= recipe.steps.length
   return (
     <div className={'bp-node result' + dimClass(g, id) + (finished ? ' running' : '')}>
+      <NodePin type="target" />
       <div className="bp-header">
         <span className="bp-icon">★</span> 成品 · {recipe.name}
       </div>
       <div className="bp-body">
         <div className="bp-row exec-row">
-          <ExecPin type="target" />
+          <RowPin type="target" />
           <span className="pin-label">出锅</span>
         </div>
         {recipe.images[0] && <img className="result-img" src={recipe.images[0]} alt={recipe.name} />}

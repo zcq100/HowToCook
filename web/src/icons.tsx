@@ -57,3 +57,24 @@ export const PrintIcon = ({ size = 16 }: { size?: number }) => (
     <path d="M5.5 11.5h9V17h-9z" />
   </svg>
 )
+
+/** 布局方向：三个节点横排（LR）或竖排（TB），中间有连线 */
+export const LayoutIcon = ({ dir, size = 16 }: { dir: 'LR' | 'TB'; size?: number }) => (
+  <svg {...iconProps} width={size} height={size}>
+    {dir === 'LR' ? (
+      <>
+        <rect x="1.5" y="7" width="4.5" height="6" rx="1" />
+        <rect x="7.75" y="7" width="4.5" height="6" rx="1" />
+        <rect x="14" y="7" width="4.5" height="6" rx="1" />
+        <path d="M6 10h1.75M12.25 10H14" />
+      </>
+    ) : (
+      <>
+        <rect x="7" y="1.5" width="6" height="4.5" rx="1" />
+        <rect x="7" y="7.75" width="6" height="4.5" rx="1" />
+        <rect x="7" y="14" width="6" height="4.5" rx="1" />
+        <path d="M10 6v1.75M10 12.25V14" />
+      </>
+    )}
+  </svg>
+)

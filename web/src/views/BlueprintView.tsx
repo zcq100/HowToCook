@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Background,
   BackgroundVariant,
@@ -6,32 +6,76 @@ import {
   MiniMap,
   ReactFlow,
   ReactFlowProvider,
+  useNodesInitialized,
   useNodesState,
   useReactFlow,
+  useUpdateNodeInternals,
   type Edge,
 } from '@xyflow/react'
 import type { Recipe } from '../types'
-import { buildGraph } from '../graph/layout'
+import { buildGraph, type Direction, type Sizes } from '../graph/layout'
 import { GraphCtx, nodeTypes, type GraphState } from '../graph/nodes'
 import { useIsMobile } from '../useMediaQuery'
 import { flowColorMode, type Theme } from '../useTheme'
+import { LayoutIcon } from '../icons'
+
+const DIR_KEY = 'blueprint-direction'
+const readDirOverride = (): Direction | null => {
+  try {
+    const v = sessionStorage.getItem(DIR_KEY)
+    return v === 'LR' || v === 'TB' ? v : null
+  } catch {
+    return null
+  }
+}
+
+const nextFrame = () => new Promise<void>((r) => requestAnimationFrame(() => r()))
 
 /** 蓝图视图：像 UE 蓝图一样，用执行线串起步骤，原料以数据引脚接入步骤 */
+/**
+ * 蓝图视图：像 UE 蓝图一样，用执行线串起步骤，原料以数据引脚接入步骤。
+ * 布局方向默认跟随屏幕（手机竖向、宽屏横向），用户手动切换后在本次会话内保持。
+ */
 export default function BlueprintView({ recipe, theme }: { recipe: Recipe; theme: Theme }) {
+  const isMobile = useIsMobile()
+  const [override, setOverride] = useState<Direction | null>(readDirOverride)
+  const dir: Direction = override ?? (isMobile ? 'TB' : 'LR')
+  const toggleDir = useCallback(() => {
+    const next: Direction = dir === 'LR' ? 'TB' : 'LR'
+    try {
+      sessionStorage.setItem(DIR_KEY, next)
+    } catch {
+      /* 忽略 */
+    }
+    setOverride(next)
+  }, [dir])
   return (
     <ReactFlowProvider>
-      <Blueprint key={recipe.id} recipe={recipe} theme={theme} />
+      <Blueprint key={recipe.id} recipe={recipe} theme={theme} dir={dir} onToggleDir={toggleDir} />
     </ReactFlowProvider>
   )
 }
 
-function Blueprint({ recipe, theme }: { recipe: Recipe; theme: Theme }) {
-  const graph = useMemo(() => buildGraph(recipe), [recipe])
-  const [nodes, , onNodesChange] = useNodesState(graph.nodes)
+function Blueprint({
+  recipe,
+  theme,
+  dir,
+  onToggleDir,
+}: {
+  recipe: Recipe
+  theme: Theme
+  dir: Direction
+  onToggleDir: () => void
+}) {
+  // 连线与方向无关；节点位置先用估算尺寸，渲染完成后用实测尺寸重新布局
+  const graph = useMemo(() => buildGraph(recipe, dir), [recipe, dir])
+  const [nodes, setNodes, onNodesChange] = useNodesState(graph.nodes)
   const [current, setCurrent] = useState(-1)
   const [focus, setFocus] = useState<string | null>(null)
   const flow = useReactFlow()
   const isMobile = useIsMobile()
+  const initialized = useNodesInitialized()
+  const updateNodeInternals = useUpdateNodeInternals()
 
   // 悬停节点时，高亮与之直接相连的节点
   const related = useMemo(() => {
@@ -49,11 +93,14 @@ function Blueprint({ recipe, theme }: { recipe: Recipe; theme: Theme }) {
     (n: number) => {
       const next = Math.max(-1, Math.min(recipe.steps.length, n))
       setCurrent(next)
+      setFocus(null) // 切换步骤时取消高亮，否则当前步骤可能被淡化
       const id = next < 0 ? 'start' : next >= recipe.steps.length ? 'result' : recipe.steps[next].id
       const node = flow.getNode(id)
       if (node) {
         const w = node.measured?.width ?? 300
-        flow.setCenter(node.position.x + w / 2, node.position.y + 160, { zoom: 0.95, duration: 450 })
+        const h = node.measured?.height ?? 320
+        // 较高的节点对准上半部分，保证标题和引脚在视野内
+        flow.setCenter(node.position.x + w / 2, node.position.y + Math.min(h / 2, 260), { zoom: 0.95, duration: 450 })
       }
     },
     [flow, recipe.steps],
@@ -62,8 +109,9 @@ function Blueprint({ recipe, theme }: { recipe: Recipe; theme: Theme }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement).tagName === 'INPUT') return
-      if (e.key === 'ArrowRight' || e.key === ' ') (e.preventDefault(), go(current + 1))
-      if (e.key === 'ArrowLeft') go(current - 1)
+      // ← → 与 ↑ ↓ 都可以切换步骤（竖向布局下上下键更顺手）
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') (e.preventDefault(), go(current + 1))
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') (e.preventDefault(), go(current - 1))
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -102,14 +150,50 @@ function Blueprint({ recipe, theme }: { recipe: Recipe; theme: Theme }) {
     return { nodes: [...new Set(ids)].map((id) => ({ id })), padding: 0.12, maxZoom: isMobile ? 0.9 : 1 }
   }, [recipe.steps, isMobile])
 
-  const ctx: GraphState = useMemo(() => ({ current, focus, related, setCurrent: go }), [current, focus, related, go])
+  // 用实测尺寸重新布局：首次渲染完成后、以及切换方向后（引脚位置和节点高度都会变）各做一次
+  const laidOutFor = useRef<Direction | null>(null)
+  const currentRef = useRef(current)
+  currentRef.current = current
+  useEffect(() => {
+    if (!initialized || laidOutFor.current === dir) return
+    const first = laidOutFor.current === null
+    laidOutFor.current = dir
+    let cancelled = false
+    ;(async () => {
+      // 等新方向下的引脚渲染出来、ResizeObserver 更新尺寸
+      await nextFrame()
+      updateNodeInternals(flow.getNodes().map((n) => n.id))
+      await nextFrame()
+      if (cancelled) return
+      const sizes: Sizes = new Map(
+        flow.getNodes().map((n) => [n.id, { w: n.measured?.width ?? 0, h: n.measured?.height ?? 0 }]),
+      )
+      const pos = new Map(buildGraph(recipe, dir, sizes).nodes.map((n) => [n.id, n.position]))
+      setNodes((nds) => nds.map((n) => ({ ...n, position: pos.get(n.id) ?? n.position })))
+      await nextFrame()
+      if (cancelled) return
+      const cur = currentRef.current
+      if (first || cur < 0) flow.fitView({ ...initialView, duration: first ? 0 : 400 })
+      else go(cur)
+    })()
+    return () => {
+      cancelled = true
+    }
+    // initialView / go 只在布局时读取当前值，不需要因其变化而重新布局
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialized, dir, recipe])
+
+  const ctx: GraphState = useMemo(
+    () => ({ current, focus, related, setCurrent: go, dir }),
+    [current, focus, related, go, dir],
+  )
 
   const stepLabel =
     current < 0 ? '未开始' : current >= recipe.steps.length ? '已完成' : `第 ${current + 1} / ${recipe.steps.length} 步`
 
   return (
     <GraphCtx.Provider value={ctx}>
-      <div className="blueprint">
+      <div className={'blueprint dir-' + dir.toLowerCase()}>
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -118,7 +202,11 @@ function Blueprint({ recipe, theme }: { recipe: Recipe; theme: Theme }) {
           onNodeMouseEnter={(_, n) => !isMobile && setFocus(n.id)}
           onNodeMouseLeave={() => !isMobile && setFocus(null)}
           // 触屏没有悬停：点按节点切换高亮，点空白处取消
-          onNodeClick={(_, n) => isMobile && setFocus((f) => (f === n.id ? null : n.id))}
+          onNodeClick={(e, n) => {
+            // 点节点里的按钮（“从第一步开始”“完成此步”等）不算点节点
+            if (!isMobile || (e.target as HTMLElement).closest('button')) return
+            setFocus((f) => (f === n.id ? null : n.id))
+          }}
           onPaneClick={() => setFocus(null)}
           nodesConnectable={false}
           fitView
@@ -150,7 +238,16 @@ function Blueprint({ recipe, theme }: { recipe: Recipe; theme: Theme }) {
           <button className="ghost" onClick={() => (setCurrent(-1), flow.fitView({ ...initialView, duration: 400 }))}>
             重置
           </button>
-          {!isMobile && <span className="hint">键盘 ← → 切换步骤 · 悬停节点查看连线</span>}
+          <button
+            className="ghost dir-btn"
+            onClick={onToggleDir}
+            title={dir === 'LR' ? '切换为竖向布局' : '切换为横向布局'}
+            aria-label={dir === 'LR' ? '切换为竖向布局' : '切换为横向布局'}
+          >
+            <LayoutIcon dir={dir === 'LR' ? 'TB' : 'LR'} />
+            <span className="dir-label">{dir === 'LR' ? '竖向' : '横向'}</span>
+          </button>
+          {!isMobile && <span className="hint">方向键切换步骤 · 悬停节点查看连线</span>}
         </div>
       </div>
     </GraphCtx.Provider>
