@@ -603,3 +603,79 @@ button { cursor: pointer; }
   :root[data-theme='paper'] .text-view h1 { font-size: 26px; letter-spacing: .12em; }
   :root[data-theme='paper'] .text-view h2 { letter-spacing: .2em; }
 }
+
+/* ==========================================================
+ * 典藏：层次
+ * 封皮（侧栏，深色皮革）→ 页眉（浅米色，带阴影）→ 桌面（较深的茶色底）→ 纸页（最亮的菜单卡）
+ * 侧栏通过在 .sidebar 上重定义变量实现，组件本身不需要区分
+ * ========================================================== */
+:root[data-theme='paper'] {
+  --bg: #e6d9be;                 /* 桌面：内容区底色，比纸页深一档 */
+  --canvas: #ece2cb;
+  --grid-major: #d3c29c;
+  --muted: #84735a;
+  --body-ink: #3b3127;           /* 正文墨色，比标题浅一档 */
+}
+
+/* 封皮 */
+:root[data-theme='paper'] .sidebar {
+  --panel: #2c221c;
+  --text: #f0e5cd;
+  --muted: #a6957a;
+  --line: rgba(214, 186, 130, .2);
+  --hover: rgba(255, 236, 200, .06);
+  --selected: rgba(212, 170, 92, .14);
+  --input-bg: rgba(0, 0, 0, .22);
+  --accent: #c9a55e;
+  --accent-text: #e3c584;
+  --on-accent: #2a1f17;
+  --pip-off: rgba(240, 229, 205, .16);
+  --pip-dim: #b38f55;
+  --scroll: rgba(240, 229, 205, .16);
+  --scroll-hover: rgba(240, 229, 205, .3);
+  --node-shadow: rgba(0, 0, 0, .45);
+  color: var(--text);
+  background: var(--paper-grain), linear-gradient(180deg, #342920 0%, #2a201a 60%, #251c17 100%);
+  box-shadow: inset -1px 0 rgba(214, 186, 130, .28), 4px 0 18px rgba(40, 28, 18, .18);
+  position: relative; z-index: 3;
+}
+:root[data-theme='paper'] .sidebar .brand em { color: var(--accent-text); }
+:root[data-theme='paper'] .sidebar .search::placeholder { color: #8f806a; }
+:root[data-theme='paper'] .sidebar .search:focus { border-color: var(--accent); }
+:root[data-theme='paper'] .sidebar .cats button { border-color: rgba(214, 186, 130, .28); color: #dccfb4; }
+:root[data-theme='paper'] .sidebar .cats button:hover { border-color: var(--accent); color: var(--text); }
+:root[data-theme='paper'] .sidebar .cats button.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+:root[data-theme='paper'] .sidebar .list button.on { box-shadow: inset 2px 0 var(--accent); }
+:root[data-theme='paper'] .sidebar .list button.on .name { color: var(--accent-text); }
+:root[data-theme='paper'] .sidebar .fav-mark { color: var(--accent); }
+:root[data-theme='paper'] .sidebar .sidebar-foot { border-top-color: rgba(214, 186, 130, .18); }
+
+/* 页眉：最亮的一条，压在桌面之上 */
+:root[data-theme='paper'] .topbar {
+  position: relative; z-index: 2;
+  background: #fbf6eb var(--paper-grain);
+  border-bottom: 1px solid rgba(167, 132, 63, .35);
+  box-shadow: 0 1px 0 #fffdf7 inset, 0 3px 0 -2px rgba(167, 132, 63, .25), 0 6px 16px rgba(70, 50, 20, .08);
+}
+:root[data-theme='paper'] .topbar h1 { color: #1f1812; }
+:root[data-theme='paper'] .tabs { background: #efe6d2; }
+
+/* 桌面：内容区底色 + 顶部柔光，让纸页“放”在上面 */
+:root[data-theme='paper'] .view {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255, 248, 232, .55), transparent 75%),
+    var(--bg) var(--paper-grain);
+}
+
+/* 纸页：最亮、阴影最重 */
+:root[data-theme='paper'] .text-view {
+  background: #fffcf5 var(--paper-grain);
+  color: var(--body-ink);
+  box-shadow: 0 1px 0 #fff inset, 0 2px 6px rgba(70, 50, 20, .08), 0 20px 50px rgba(70, 50, 20, .2);
+}
+:root[data-theme='paper'] .text-view h1 { color: #1f1812; }
+:root[data-theme='paper'] .text-view td:first-child { color: #2a221a; }
+
+/* 蓝图节点与工具栏也按“纸页”处理，阴影加重一点 */
+:root[data-theme='paper'] .bp-node { background-color: #fffcf5; }
+:root[data-theme='paper'] .bp-toolbar { background-color: rgba(253, 249, 240, .96); box-shadow: 0 6px 20px rgba(70, 50, 20, .16); }
