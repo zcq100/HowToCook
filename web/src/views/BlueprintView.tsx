@@ -14,7 +14,7 @@ import type { Recipe } from '../types'
 import { buildGraph } from '../graph/layout'
 import { GraphCtx, nodeTypes, type GraphState } from '../graph/nodes'
 import { useIsMobile } from '../useMediaQuery'
-import type { Theme } from '../useTheme'
+import { flowColorMode, type Theme } from '../useTheme'
 
 /** 蓝图视图：像 UE 蓝图一样，用执行线串起步骤，原料以数据引脚接入步骤 */
 export default function BlueprintView({ recipe, theme }: { recipe: Recipe; theme: Theme }) {
@@ -124,13 +124,20 @@ function Blueprint({ recipe, theme }: { recipe: Recipe; theme: Theme }) {
           fitView
           fitViewOptions={initialView}
           minZoom={0.15}
-          colorMode={theme}
+          colorMode={flowColorMode(theme)}
           attributionPosition={isMobile ? 'top-right' : 'bottom-right'}
         >
-          <Background id="minor" variant={BackgroundVariant.Lines} gap={16} color="var(--grid-minor)" />
-          <Background id="major" variant={BackgroundVariant.Lines} gap={128} color="var(--grid-major)" lineWidth={1.5} />
+          {theme === 'paper' ? (
+            // 纸质主题用细点阵，不用网格线
+            <Background id="dots" variant={BackgroundVariant.Dots} gap={22} size={1.3} color="var(--grid-major)" />
+          ) : (
+            <>
+              <Background id="minor" variant={BackgroundVariant.Lines} gap={16} color="var(--grid-minor)" />
+              <Background id="major" variant={BackgroundVariant.Lines} gap={128} color="var(--grid-major)" lineWidth={1.5} />
+            </>
+          )}
           {!isMobile && <Controls showInteractive={false} />}
-          {!isMobile && <MiniMap pannable zoomable nodeColor={miniColor} maskColor={theme === 'light' ? 'rgba(240,238,232,.7)' : 'rgba(0,0,0,.55)'} />}
+          {!isMobile && <MiniMap pannable zoomable nodeColor={miniColor(theme)} maskColor={MASK[theme]} />}
         </ReactFlow>
         <div className="bp-toolbar">
           <button onClick={() => go(current - 1)} disabled={current < 0} aria-label="上一步">
@@ -150,5 +157,15 @@ function Blueprint({ recipe, theme }: { recipe: Recipe; theme: Theme }) {
   )
 }
 
-const miniColor = (n: { type?: string }) =>
-  n.type === 'step' ? '#3a6ea5' : n.type === 'event' ? '#a33' : n.type === 'result' ? '#b8892b' : '#4a7a3a'
+const MASK: Record<Theme, string> = {
+  dark: 'rgba(0,0,0,.55)',
+  light: 'rgba(240,238,232,.7)',
+  paper: 'rgba(244,236,219,.75)',
+}
+
+const MINI: Record<Theme, Record<string, string>> = {
+  dark: { step: '#3a6ea5', event: '#a33', result: '#b8892b', ingredient: '#4a7a3a' },
+  light: { step: '#3a6ea5', event: '#a33', result: '#b8892b', ingredient: '#4a7a3a' },
+  paper: { step: '#33414f', event: '#7a2e26', result: '#8f7034', ingredient: '#8a9a78' },
+}
+const miniColor = (theme: Theme) => (n: { type?: string }) => MINI[theme][n.type ?? 'ingredient'] ?? MINI[theme].ingredient

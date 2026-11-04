@@ -35,6 +35,14 @@ export const MoonIcon = () => (
   </svg>
 )
 
+/** 翻开的菜单：表示“典藏”纸质主题 */
+export const PaperIcon = () => (
+  <svg {...iconProps}>
+    <path d="M10 5.5C8.3 4.2 5.8 3.8 3 4v11.5c2.8-.2 5.3.2 7 1.5 1.7-1.3 4.2-1.7 7-1.5V4c-2.8-.2-5.3.2-7 1.5z" />
+    <path d="M10 5.5V17" />
+  </svg>
+)
+
 /** 半明半暗的圆：表示“跟随系统” */
 export const AutoThemeIcon = () => (
   <svg {...iconProps}>

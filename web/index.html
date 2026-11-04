@@ -10,9 +10,9 @@
       ;(function () {
         var p = null
         try { p = localStorage.getItem('theme') } catch (e) {}
-        var t = p === 'light' || p === 'dark' ? p : matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+        var t = p === 'light' || p === 'dark' || p === 'paper' ? p : matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
         document.documentElement.dataset.theme = t
-        document.querySelector('meta[name="theme-color"]').setAttribute('content', t === 'light' ? '#ffffff' : '#1e1e1e')
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', { light: '#ffffff', dark: '#1e1e1e', paper: '#f6efe0' }[t])
       })()
     </script>
   </head>

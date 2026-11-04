@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState, type ComponentType } from 'react'
 import type { Recipe } from './types'
 import { stars } from './inline'
 import { REPO_URL } from './config'
-import { AutoThemeIcon, GitHubIcon, MenuIcon, MoonIcon, SunIcon } from './icons'
-import { THEME_LABEL, THEME_ORDER, useTheme, type Theme } from './useTheme'
+import { AutoThemeIcon, GitHubIcon, MenuIcon, MoonIcon, PaperIcon, SunIcon } from './icons'
+import { THEME_LABEL, THEME_ORDER, useTheme, type Theme, type ThemePref } from './useTheme'
 import BlueprintView from './views/BlueprintView'
 import TextView from './views/TextView'
 
@@ -26,7 +26,7 @@ export default function App() {
   const [category, setCategory] = useState<string>('all')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const { pref, theme, setPref } = useTheme()
-  const nextPref = THEME_ORDER[(THEME_ORDER.indexOf(pref) + 1) % THEME_ORDER.length]
+  const [themeMenu, setThemeMenu] = useState(false)
 
   useEffect(() => {
     fetch('data/recipes.json')
@@ -70,14 +70,38 @@ export default function App() {
             HowToCook <em>菜谱蓝图</em>
           </span>
           <span className="brand-actions">
-            <button
-              className="theme-btn"
-              onClick={() => setPref(nextPref)}
-              title={`主题：${THEME_LABEL[pref]}（点击切换为${THEME_LABEL[nextPref]}）`}
-              aria-label={`主题：${THEME_LABEL[pref]}，点击切换为${THEME_LABEL[nextPref]}`}
-            >
-              {pref === 'system' ? <AutoThemeIcon /> : pref === 'light' ? <SunIcon /> : <MoonIcon />}
-            </button>
+            <span className="theme-picker">
+              <button
+                className="theme-btn"
+                onClick={() => setThemeMenu((v) => !v)}
+                title={`主题：${THEME_LABEL[pref]}`}
+                aria-label={`主题：${THEME_LABEL[pref]}`}
+                aria-haspopup="menu"
+                aria-expanded={themeMenu}
+              >
+                <ThemeIcon pref={pref} />
+              </button>
+              {themeMenu && (
+                <>
+                  <div className="theme-menu-backdrop" onClick={() => setThemeMenu(false)} />
+                  <ul className="theme-menu" role="menu">
+                    {THEME_ORDER.map((p) => (
+                      <li key={p}>
+                        <button
+                          role="menuitemradio"
+                          aria-checked={p === pref}
+                          className={p === pref ? 'on' : ''}
+                          onClick={() => (setPref(p), setThemeMenu(false))}
+                        >
+                          <ThemeIcon pref={p} />
+                          {THEME_LABEL[p]}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </span>
             <a className="repo-link" href={REPO_URL} target="_blank" rel="noreferrer" title="GitHub 仓库">
               <GitHubIcon size={18} />
             </a>
@@ -170,4 +194,11 @@ function Difficulty({ value }: { value: number }) {
       ))}
     </span>
   )
+}
+
+function ThemeIcon({ pref }: { pref: ThemePref }) {
+  if (pref === 'light') return <SunIcon />
+  if (pref === 'dark') return <MoonIcon />
+  if (pref === 'paper') return <PaperIcon />
+  return <AutoThemeIcon />
 }

@@ -8,15 +8,15 @@ const ING_GAP = 14
 
 /**
  * 每个原料一个色相，方便追踪长连线（工具统一用蓝色）。
- * 亮度取 CSS 变量 --pin-l，深色 / 浅色主题各自保证对比度。
+ * 饱和度 / 亮度取 CSS 变量 --pin-s / --pin-l，由各主题决定。
  */
 export function ingredientColor(recipe: Recipe, id: string) {
   const ing = recipe.ingredients.find((i) => i.id === id)
   if (!ing) return 'hsl(210 8% var(--pin-l))'
-  if (ing.kind === 'tool') return 'hsl(205 90% var(--pin-l))'
+  if (ing.kind === 'tool') return 'hsl(205 calc(var(--pin-s) + 20%) var(--pin-l))'
   const idx = recipe.ingredients.filter((i) => i.kind === 'ingredient').indexOf(ing)
   const hue = (95 + idx * 137.5) % 360
-  return `hsl(${hue.toFixed(1)} 70% var(--pin-l))`
+  return `hsl(${hue.toFixed(1)} var(--pin-s) var(--pin-l))`
 }
 
 // 原料节点里的用量最多显示 3 行（见 nodes.tsx 的 line-clamp），按此估算高度

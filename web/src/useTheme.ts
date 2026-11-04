@@ -1,17 +1,18 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
 
-export type ThemePref = 'system' | 'light' | 'dark'
-export type Theme = 'light' | 'dark'
+export type ThemePref = 'system' | 'light' | 'dark' | 'paper'
+export type Theme = 'light' | 'dark' | 'paper'
+const FIXED: Theme[] = ['light', 'dark', 'paper']
 
 const STORAGE_KEY = 'theme'
 const query = '(prefers-color-scheme: light)'
-const META_COLORS: Record<Theme, string> = { dark: '#1e1e1e', light: '#ffffff' }
+const META_COLORS: Record<Theme, string> = { dark: '#1e1e1e', light: '#ffffff', paper: '#f6efe0' }
 
 // 隐私模式等场景下 localStorage 可能不可用，此时只是不记住选择
 function readPref(): ThemePref {
   try {
     const v = localStorage.getItem(STORAGE_KEY)
-    return v === 'light' || v === 'dark' ? v : 'system'
+    return FIXED.includes(v as Theme) ? (v as Theme) : 'system'
   } catch {
     return 'system'
   }
@@ -50,5 +51,8 @@ export function useTheme() {
   return { pref, theme, setPref }
 }
 
-export const THEME_ORDER: ThemePref[] = ['system', 'light', 'dark']
-export const THEME_LABEL: Record<ThemePref, string> = { system: '跟随系统', light: '浅色', dark: '深色' }
+export const THEME_ORDER: ThemePref[] = ['system', 'light', 'dark', 'paper']
+export const THEME_LABEL: Record<ThemePref, string> = { system: '跟随系统', light: '浅色', dark: '深色', paper: '典藏' }
+
+/** React Flow 只区分明暗 */
+export const flowColorMode = (t: Theme) => (t === 'dark' ? 'dark' : 'light')

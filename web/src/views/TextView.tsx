@@ -33,7 +33,7 @@ export default function TextView({ recipe }: { recipe: Recipe }) {
             {ingredients.map((i) => (
               <tr key={i.id}>
                 <td>{i.name}</td>
-                <td>{i.amounts.join('；') || '—'}</td>
+                <td>{i.amounts.map((a) => trimName(i.name, a)).join('；') || '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -77,4 +77,15 @@ export default function TextView({ recipe }: { recipe: Recipe }) {
       </footer>
     </article>
   )
+}
+
+/**
+ * 用量行通常以原料名开头（“可乐 500ml”），在原料表里重复显示名称没有意义。
+ * 若开头的词与原料名互相包含（“鸡翅 10 只” / 原料“鸡翅中”），就去掉它。
+ */
+function trimName(name: string, amount: string) {
+  const m = amount.match(/^([^\s:：\d]+)[\s:：]+(.+)$/)
+  if (!m) return amount
+  const base = name.replace(/[（(][^）)]*[）)]/g, '')
+  return base.includes(m[1]) || m[1].includes(base) ? m[2] : amount
 }
