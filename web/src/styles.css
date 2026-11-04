@@ -1,6 +1,6 @@
-/* ---------- 主题 ----------
- * 深色为默认值；<html data-theme="light"> 时覆盖为浅色。
- * data-theme 由 index.html 中的内联脚本在首屏前设置（默认跟随系统），之后由 useTheme 维护。
+/* ---------- 主题：典藏（默认）/ 浅色 / 深色 ----------
+ * :root 中是深色的变量值；data-theme="light" / "paper" 时覆盖。
+ * data-theme 由 index.html 中的内联脚本在首屏前设置（默认“典藏”），之后由 useTheme 维护。
  */
 :root {
   color-scheme: dark;
