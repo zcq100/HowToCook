@@ -36,7 +36,9 @@ export function buildGraph(recipe: Recipe): { nodes: Node[]; edges: Edge[] } {
 
   const unlinked = recipe.ingredients.filter((i) => !firstUse.has(i.id))
   nodes.push({ id: 'start', type: 'event', position: { x: 0, y: 0 }, data: { recipe } })
-  let y = 150
+  // 开始节点高度随份量说明变化（宽 260px、12px 字号，每行约 19 个字），未关联原料排在它下方
+  const noteLines = recipe.servingsNote ? Math.ceil(recipe.servingsNote.length / 19) : 0
+  let y = 120 + noteLines * 19 + 24
   for (const ing of unlinked) {
     nodes.push({
       id: ing.id,

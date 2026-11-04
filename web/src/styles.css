@@ -224,6 +224,17 @@ button { cursor: pointer; }
 }
 .topbar h1 { margin: 0; font-family: var(--font-display); font-size: 20px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .topbar-meta { display: flex; align-items: baseline; gap: 14px; white-space: nowrap; }
+/* 顶栏在窄窗口下的取舍：菜名至少保留几个字，切换按钮永不换行 */
+.topbar h1 { flex: 0 1 auto; min-width: 4.5em; }
+.tabs { flex: none; }
+.tabs button { white-space: nowrap; }
+@media (max-width: 1200px) {
+  .topbar-meta { display: none; }          /* 难度 / 热量 / 步数在图文卡片和蓝图里都有 */
+}
+@media (max-width: 1000px) {
+  .fav-btn .fav-label, .print-btn .print-label { display: none; }
+  .fav-btn, .print-btn { padding: 5px 7px; }
+}
 .tabs { margin-left: auto; display: flex; background: var(--seg-bg); border-radius: 6px; padding: 2px; }
 .tabs button { border: 0; background: transparent; padding: 5px 14px; border-radius: 4px; }
 .tabs button.on { font-weight: 500; }
@@ -364,7 +375,7 @@ button { cursor: pointer; }
 }
 /* 蓝图节点里的步骤图：缩略显示 */
 .bp-node .inline-img { max-width: 100%; max-height: 180px; width: 100%; object-fit: cover; margin: 6px 0 2px; }
-.text-view h1 { font-family: var(--font-display); font-weight: 600; }
+.text-view h1 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; }
 .text-view h2 { border-bottom: 1px solid var(--line); padding-bottom: 4px; margin-top: 32px; font-family: var(--font-display); font-size: 18px; font-weight: 600; }
 .text-view h2 small { font-weight: 400; color: var(--muted); font-size: 13px; }
 .text-view table { border-collapse: collapse; width: 100%; }
@@ -551,7 +562,11 @@ button { cursor: pointer; }
   content: ''; flex: 1; max-width: 140px; height: 3px;
   border-top: 1px solid var(--gold-soft); border-bottom: 1px solid var(--gold-soft);
 }
-:root[data-theme='paper'] .text-view h2 small { font-weight: 400; letter-spacing: 0; }
+/* 份量说明单独占一行放在标题下方，避免长说明把标题挤成竖排 */
+:root[data-theme='paper'] .text-view h2 { flex-wrap: wrap; row-gap: 4px; }
+:root[data-theme='paper'] .text-view h2 small {
+  order: 3; flex-basis: 100%; text-align: center; font-weight: 400; letter-spacing: 0; line-height: 1.6;
+}
 
 /* 原料表：菜单式点状引线 */
 :root[data-theme='paper'] .text-view table,
@@ -607,6 +622,9 @@ button { cursor: pointer; }
 :root[data-theme='paper'] .react-flow__edge.edge-data path { opacity: .9; }
 :root[data-theme='paper'] .done-banner { color: var(--wine); font-weight: 500; }
 
+@media (min-width: 769px) and (max-width: 1100px) {
+  :root[data-theme='paper'] .text-view { margin: 20px; padding: 44px 36px 40px; }
+}
 @media (max-width: 768px) {
   :root[data-theme='paper'] .text-view { margin: 12px; padding: 36px 20px 32px; outline-offset: -6px; }
   :root[data-theme='paper'] .text-view h1 { font-size: 26px; letter-spacing: .12em; }
@@ -646,7 +664,10 @@ button { cursor: pointer; }
   color: var(--text);
   background: var(--paper-grain), linear-gradient(180deg, #342920 0%, #2a201a 60%, #251c17 100%);
   box-shadow: inset -1px 0 rgba(214, 186, 130, .28), 4px 0 18px rgba(40, 28, 18, .18);
-  position: relative; z-index: 3;
+}
+/* 只在桌面布局下抬高层级，让阴影压在内容区上；手机上侧栏是 position: fixed 的抽屉，不能覆盖 */
+@media (min-width: 769px) {
+  :root[data-theme='paper'] .sidebar { position: relative; z-index: 3; }
 }
 :root[data-theme='paper'] .sidebar .brand em { color: var(--accent-text); }
 :root[data-theme='paper'] .sidebar .search::placeholder { color: #8f806a; }
