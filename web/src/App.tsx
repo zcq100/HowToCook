@@ -84,10 +84,10 @@ export default function App() {
   const recipe = recipes?.find((r) => r.id === route.id) ?? recipes?.find((r) => r.name === '可乐鸡翅') ?? recipes?.[0]
   const View = VIEWS.find((v) => v.id === route.view)!.component
 
-  // 标签页标题固定为站名（分享短链进来时 worker 为链接预览设置的菜谱标题，在这里换回站名）
+  // 标签页标题：“菜名 · 菜谱蓝图”，方便同时打开多道菜时区分
   useEffect(() => {
-    document.title = '菜谱蓝图'
-  }, [])
+    document.title = recipe ? `${recipe.name} · 菜谱蓝图` : '菜谱蓝图'
+  }, [recipe])
 
   return (
     <div className={'app' + (drawerOpen ? ' drawer-open' : '')}>
