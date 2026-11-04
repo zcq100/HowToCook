@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState, type ComponentType } from 'react'
 import type { Recipe } from './types'
 import { stars } from './inline'
 import { REPO_URL } from './config'
-import { BookmarkIcon, GitHubIcon, MenuIcon, MoonIcon, PaperIcon, PrintIcon, SunIcon } from './icons'
+import { BookmarkIcon, GitHubIcon, MenuIcon, MoonIcon, PaperIcon, PrintIcon, ShareIcon, SunIcon } from './icons'
+import ShareDialog from './ShareDialog'
 import { printRecipe } from './print'
 import { THEME_LABEL, THEME_ORDER, useTheme, type Theme } from './useTheme'
 import { useFavorites } from './useFavorites'
@@ -36,9 +37,10 @@ export default function App() {
   const { theme, setTheme } = useTheme()
   const favorites = useFavorites()
   const [themeMenu, setThemeMenu] = useState(false)
+  const [sharing, setSharing] = useState(false)
 
   useEffect(() => {
-    fetch('data/recipes.json')
+    fetch('/data/recipes.json')
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.statusText))))
       .then(setRecipes)
       .catch((e) => setError(String(e)))
@@ -81,6 +83,11 @@ export default function App() {
 
   const recipe = recipes?.find((r) => r.id === route.id) ?? recipes?.find((r) => r.name === '可乐鸡翅') ?? recipes?.[0]
   const View = VIEWS.find((v) => v.id === route.view)!.component
+
+  // 标签页标题跟随当前菜谱（分享短链进来时 worker 设置的标题也会被更新）
+  useEffect(() => {
+    if (recipe) document.title = `${recipe.name} · 菜谱蓝图`
+  }, [recipe])
 
   return (
     <div className={'app' + (drawerOpen ? ' drawer-open' : '')}>
@@ -215,6 +222,10 @@ export default function App() {
                   {recipe.ingredients.length} 种原料 · {recipe.steps.length} 步
                 </span>
               </span>
+              <button className="share-btn" onClick={() => setSharing(true)} title="分享这道菜">
+                <ShareIcon />
+                <span className="share-label">分享</span>
+              </button>
               {route.view === 'text' && (
                 <button className="print-btn" onClick={() => printRecipe(recipe)} title="打印这份配方">
                   <PrintIcon />
@@ -231,6 +242,7 @@ export default function App() {
             </div>
             <div className="view">
               <View recipe={recipe} theme={theme} />
+              {sharing && <ShareDialog recipe={recipe} onClose={() => setSharing(false)} />}
             </div>
           </>
         )}

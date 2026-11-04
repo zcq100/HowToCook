@@ -78,3 +78,10 @@ export const LayoutIcon = ({ dir, size = 16 }: { dir: 'LR' | 'TB'; size?: number
     )}
   </svg>
 )
+
+export const ShareIcon = ({ size = 16 }: { size?: number }) => (
+  <svg {...iconProps} width={size} height={size}>
+    <path d="M10 2.5v10M6.5 6 10 2.5 13.5 6" />
+    <path d="M6.5 9H5a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 5 17h10a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 15 9h-1.5" />
+  </svg>
+)

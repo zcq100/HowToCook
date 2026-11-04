@@ -3,9 +3,12 @@
   // 必须与 Cloudflare 控制台里 Worker 的名称一致
   "name": "howtocook",
   "compatibility_date": "2026-07-01",
-  // 纯静态站点：只托管 Vite 构建产物，不需要 Worker 脚本
+  // 静态资源托管 Vite 构建产物；worker/index.js 只处理 / 和分享短链 /r/*，给链接预览改写 meta 标签
+  "main": "./worker/index.js",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/", "/r/*"]
   }
 }

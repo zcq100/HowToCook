@@ -27,3 +27,11 @@ npm run build   # 产物在 dist/
 - 图片：解析所有章节里的图片引用（成品图、步骤图、附加内容图），复制到 `public/images/`。仓库中的图片是 Git LFS 文件，若检出的只是 LFS 指针（本地未装 git-lfs、或 Cloudflare 构建环境），会从 `media.githubusercontent.com` 下载真实文件并校验 sha256，缓存在 `web/.cache/lfs/`。下载失败的图片会被跳过，不会中断构建。
   - 仓库 / 分支可用环境变量 `LFS_MEDIA_BASE` 覆盖，默认 `https://media.githubusercontent.com/media/zcq100/HowToCook/zcq100`。
   - 完整下载约 107 MB，计入 GitHub 账号的 LFS 带宽额度。
+
+## 分享与链接预览
+
+- 每道菜的分享短链是 `/r/<菜谱 id>`（例如 `/r/meat_dish/可乐鸡翅`）。打开后前端会改写成 `/#text/<菜谱 id>`，进入图文视图。
+- 站内路由用 `#`，链接预览抓取器看不到 `#` 之后的内容，所以 `worker/index.js` 只处理 `/` 和 `/r/*`：用 HTMLRewriter 把 `index.html` 里的标题、简介和 `og:image` 换成该菜谱的内容，并改成绝对地址。其余请求直接走静态资源（见 `wrangler.jsonc` 的 `run_worker_first`）。
+- 顶栏“分享”会在浏览器里生成一张 1080×1440 的典藏风格分享卡片（`src/shareCard.ts`），带成品图和指向短链的二维码，可保存、系统分享或复制链接。
+- 图标和默认预览图的源文件在 `brand/`（`icon.svg`、`og.html`），`public/` 里是渲染好的 PNG。改了源文件后需要重新渲染。
+- 微信内置浏览器不读取 Open Graph 标签，自定义分享标题和配图需要接入公众号的 JS-SDK。这里只保证页面标题正确，推荐在微信里分享卡片图片。

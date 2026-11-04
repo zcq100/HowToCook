@@ -7,6 +7,10 @@ import '@fontsource-variable/noto-serif-sc'
 import './styles.css'
 import App from './App'
 
+// 分享短链 /r/<菜谱 id> → 站内路由 /#text/<菜谱 id>（在首次渲染前改写，避免相对路径的图片按 /r/ 解析）
+const share = location.pathname.match(/^\/r\/(.+)$/)
+if (share) history.replaceState(null, '', `/#text/${share[1]}`)
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />

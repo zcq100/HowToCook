@@ -144,12 +144,14 @@ button { cursor: pointer; }
   display: flex; padding: 4px; margin: -4px; border: 0; background: transparent; color: var(--muted); border-radius: 4px;
 }
 .theme-btn:hover { color: var(--text); }
-.print-btn {
-  display: inline-flex; align-items: center; gap: 5px; flex: none; align-self: center; margin-left: auto;
+.share-btn, .print-btn {
+  display: inline-flex; align-items: center; gap: 5px; flex: none; align-self: center;
   padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: var(--muted); font-size: 13px;
 }
-.print-btn:hover { color: var(--accent-text); border-color: var(--accent); }
-.print-btn + .tabs { margin-left: 8px; }
+.share-btn { margin-left: auto; }
+.share-btn + .print-btn { margin-left: 8px; }
+.share-btn:hover, .print-btn:hover { color: var(--accent-text); border-color: var(--accent); }
+.share-btn + .tabs, .print-btn + .tabs { margin-left: 8px; }
 .print-only { display: none; }
 .theme-picker { position: relative; display: flex; }
 
@@ -232,8 +234,8 @@ button { cursor: pointer; }
   .topbar-meta { display: none; }          /* 难度 / 热量 / 步数在图文卡片和蓝图里都有 */
 }
 @media (max-width: 1000px) {
-  .fav-btn .fav-label, .print-btn .print-label { display: none; }
-  .fav-btn, .print-btn { padding: 5px 7px; }
+  .fav-btn .fav-label, .print-btn .print-label, .share-btn .share-label { display: none; }
+  .fav-btn, .print-btn, .share-btn { padding: 5px 7px; }
 }
 .tabs { margin-left: auto; display: flex; background: var(--seg-bg); border-radius: 6px; padding: 2px; }
 .tabs button { border: 0; background: transparent; padding: 5px 14px; border-radius: 4px; }
@@ -426,13 +428,16 @@ button { cursor: pointer; }
     width: 38px; height: 38px; margin: -4px 0 -4px -4px; border: 0; background: transparent; border-radius: 6px;
   }
   .menu-btn:active { background: var(--hover); }
-  .topbar h1 { font-size: 17px; flex: 1; min-width: 0; }
+  .topbar h1 { font-size: 17px; flex: 1; min-width: 3.2em; }
   .topbar-meta { display: none; }
-  .tabs button { padding: 7px 12px; }
+  .tabs button { padding: 7px 9px; font-size: 15px; }
+  /* 手机上顶栏放不下：打印按钮隐藏（需要时可用浏览器菜单打印 / 存为 PDF） */
+  .topbar .print-btn { display: none; }
   .fav-btn { padding: 7px; border-color: transparent; }
   .fav-btn .fav-label { display: none; }
-  .print-btn { padding: 7px; border-color: transparent; }
-  .print-btn .print-label { display: none; }
+  .print-btn, .share-btn { padding: 7px; border-color: transparent; }
+  .print-btn .print-label, .share-btn .share-label { display: none; }
+  .share-btn + .print-btn, .share-btn + .tabs, .print-btn + .tabs { margin-left: 0; }
 
   /* 蓝图：底部工具栏铺满，按钮加大 */
   .bp-toolbar {
@@ -882,3 +887,41 @@ button { cursor: pointer; }
 }
 
 @media print { .cook-nav, .timer-tray, .cook-progress { display: none !important; } }
+
+/* ==========================================================
+ * 分享弹窗
+ * ========================================================== */
+.share-overlay {
+  position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
+  padding: 16px; background: var(--backdrop); backdrop-filter: blur(2px);
+}
+.share-dialog {
+  display: flex; flex-direction: column; gap: 10px; width: min(440px, 100%); max-height: calc(100dvh - 32px);
+  padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); box-shadow: 0 20px 60px var(--node-shadow);
+}
+.share-head { display: flex; align-items: center; justify-content: space-between; }
+.share-head h2 { margin: 0; font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+.share-close { width: 32px; height: 32px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font-size: 16px; }
+.share-close:hover { background: var(--hover); }
+.share-preview { flex: 1; min-height: 0; display: flex; justify-content: center; }
+.share-preview img {
+  display: block; max-width: 100%; max-height: min(60dvh, 560px); aspect-ratio: 3 / 4; object-fit: contain;
+  border-radius: 6px; box-shadow: 0 6px 20px var(--node-shadow); -webkit-touch-callout: default;
+}
+.share-loading {
+  display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 3 / 4; max-height: min(60dvh, 560px);
+  border-radius: 6px; background: var(--hover); color: var(--muted); font-size: 14px;
+}
+.share-hint { margin: 0; text-align: center; color: var(--muted); font-size: 12px; }
+.share-actions { display: flex; gap: 8px; }
+.share-actions button {
+  flex: 1; padding: 10px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--btn-bg); font-size: 14px; font-weight: 500;
+}
+.share-actions button:disabled { opacity: .45; }
+.share-actions .share-primary { border-color: var(--accent); background: var(--accent); color: var(--on-accent); }
+:root[data-theme='paper'] .share-actions .share-primary { border-color: var(--wine); background: var(--wine); color: #fbf3e2; }
+.share-link {
+  overflow: hidden; padding: 6px 10px; border-radius: 6px; background: var(--hover); color: var(--muted);
+  font-size: 12px; white-space: nowrap; text-overflow: ellipsis; user-select: all;
+}
+@media print { .share-overlay { display: none !important; } }

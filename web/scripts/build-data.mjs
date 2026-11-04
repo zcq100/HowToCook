@@ -387,7 +387,14 @@ const files = walk(dishesDir).filter((f) => !f.includes(`${path.sep}template${pa
 fs.rmSync(path.join(outDir, 'images'), { recursive: true, force: true })
 const parsed = files.map(parseRecipe).sort((a, b) => a.name.localeCompare(b.name, 'zh'))
 const { stats, failed } = await materializeAll(imageJobs)
-const recipes = parsed.map((r) => dropImages(r, failed))
+// 封面图：开头的成品图；没有时用步骤里最后一张图（通常是出锅装盘的照片）。外链图片不作封面（分享卡片画布会被跨域污染）
+function withCover(recipe) {
+  const local = (u) => u && !/^https?:/.test(u)
+  const stepImages = recipe.steps.flatMap((s) => [s.text, ...s.notes]).flatMap((t) => [...t.matchAll(IMG_RE)].map((m) => m[2]))
+  recipe.cover = recipe.images.find(local) ?? stepImages.filter(local).at(-1) ?? null
+  return recipe
+}
+const recipes = parsed.map((r) => withCover(dropImages(r, failed)))
 fs.mkdirSync(path.join(outDir, 'data'), { recursive: true })
 fs.writeFileSync(path.join(outDir, 'data', 'recipes.json'), JSON.stringify(recipes))
 
