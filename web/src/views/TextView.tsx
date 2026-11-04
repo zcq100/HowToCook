@@ -1,11 +1,14 @@
+import { useEffect } from 'react'
 import type { Recipe } from '../types'
+import { eagerImagesOnPrint } from '../print'
 import { Inline, stars } from '../inline'
-import { sourceUrl } from '../config'
+import { REPO_URL, sourceUrl } from '../config'
 import { GitHubIcon } from '../icons'
 import { CategoryIcon } from '../categoryIcons'
 
 /** 传统图文视图：作为对照，也方便后续扩展更多阅览方式 */
 export default function TextView({ recipe }: { recipe: Recipe }) {
+  useEffect(eagerImagesOnPrint, [])
   const ingredients = recipe.ingredients.filter((i) => i.kind === 'ingredient')
   const tools = recipe.ingredients.filter((i) => i.kind === 'tool')
   return (
@@ -75,6 +78,7 @@ export default function TextView({ recipe }: { recipe: Recipe }) {
       )}
 
       <footer className="source-link">
+        <span className="print-only">来源：{REPO_URL.replace(/^https?:\/\//, '')}</span>
         <a href={sourceUrl(recipe.id)} target="_blank" rel="noreferrer">
           <GitHubIcon size={14} /> 在 GitHub 查看原文 / 提交修改
         </a>

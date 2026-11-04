@@ -144,6 +144,13 @@ button { cursor: pointer; }
   display: flex; padding: 4px; margin: -4px; border: 0; background: transparent; color: var(--muted); border-radius: 4px;
 }
 .theme-btn:hover { color: var(--text); }
+.print-btn {
+  display: inline-flex; align-items: center; gap: 5px; flex: none; align-self: center; margin-left: auto;
+  padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: var(--muted); font-size: 13px;
+}
+.print-btn:hover { color: var(--accent-text); border-color: var(--accent); }
+.print-btn + .tabs { margin-left: 8px; }
+.print-only { display: none; }
 .theme-picker { position: relative; display: flex; }
 
 /* 收藏 */
@@ -407,6 +414,8 @@ button { cursor: pointer; }
   .tabs button { padding: 7px 12px; }
   .fav-btn { padding: 7px; border-color: transparent; }
   .fav-btn .fav-label { display: none; }
+  .print-btn { padding: 7px; border-color: transparent; }
+  .print-btn .print-label { display: none; }
 
   /* 蓝图：底部工具栏铺满，按钮加大 */
   .bp-toolbar {
@@ -679,3 +688,42 @@ button { cursor: pointer; }
 /* 蓝图节点与工具栏也按“纸页”处理，阴影加重一点 */
 :root[data-theme='paper'] .bp-node { background-color: #fffcf5; }
 :root[data-theme='paper'] .bp-toolbar { background-color: rgba(253, 249, 240, .96); box-shadow: 0 6px 20px rgba(70, 50, 20, .16); }
+
+/* ==========================================================
+ * 打印：只输出图文配方这张菜单卡（A4）
+ * ========================================================== */
+@media print {
+  @page { size: A4; margin: 16mm 15mm 18mm; }
+
+  /* 深色 / 浅色主题打印时统一用白底深字；典藏保留自己的配色，只把纸面换成白色 */
+  :root:not([data-theme='paper']) {
+    color-scheme: light;
+    --text: #1a1a1a; --muted: #5a5a5a; --line: #cfcfcf;
+    --accent: #b07a1e; --accent-text: #8a5a14; --img-bg: transparent; --note-border: #ccc;
+  }
+  html, body, #root { height: auto !important; background: #fff !important; }
+  :root { color: var(--text); }
+
+  .app { display: block; height: auto; }
+  .sidebar, .backdrop, .topbar, .theme-menu, .theme-menu-backdrop { display: none !important; }
+  .main, .view { display: block; overflow: visible !important; position: static; background: none !important; }
+
+  .text-view {
+    max-width: none !important; margin: 0 !important; padding: 0 !important;
+    background: #fff !important; box-shadow: none !important; border: 0 !important; outline: 0 !important;
+  }
+  :root[data-theme='paper'] .text-view { color: #2b231b; }
+
+  /* 分页：标题不落在页尾，条目和图片不被拆开 */
+  .text-view h1, .text-view h2 { break-after: avoid; page-break-after: avoid; }
+  .text-view tr, .text-view li, .text-view img, .step-note { break-inside: avoid; page-break-inside: avoid; }
+
+  /* 图集：横向滑动改为两列网格 */
+  .gallery.multi { display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-flow: row; overflow: visible; }
+  .gallery img { max-height: 95mm; box-shadow: none !important; }
+  .gallery.multi img { aspect-ratio: 4 / 3; }
+  .text-view .inline-img { max-width: 60%; max-height: 70mm; box-shadow: none !important; }
+
+  .source-link a { display: none; }
+  .source-link .print-only { display: inline; color: var(--muted); font-size: 11px; }
+}

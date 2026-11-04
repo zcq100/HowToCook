@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState, type ComponentType } from 'react'
 import type { Recipe } from './types'
 import { stars } from './inline'
 import { REPO_URL } from './config'
-import { BookmarkIcon, GitHubIcon, MenuIcon, MoonIcon, PaperIcon, SunIcon } from './icons'
+import { BookmarkIcon, GitHubIcon, MenuIcon, MoonIcon, PaperIcon, PrintIcon, SunIcon } from './icons'
+import { printRecipe } from './print'
 import { THEME_LABEL, THEME_ORDER, useTheme, type Theme } from './useTheme'
 import { useFavorites } from './useFavorites'
 import { CategoryIcon } from './categoryIcons'
@@ -212,6 +213,12 @@ export default function App() {
                   {recipe.ingredients.length} 种原料 · {recipe.steps.length} 步
                 </span>
               </span>
+              {route.view === 'text' && (
+                <button className="print-btn" onClick={() => printRecipe(recipe)} title="打印这份配方">
+                  <PrintIcon />
+                  <span className="print-label">打印</span>
+                </button>
+              )}
               <div className="tabs">
                 {VIEWS.map((v) => (
                   <button key={v.id} className={v.id === route.view ? 'on' : ''} onClick={() => navigate(v.id, recipe.id)}>

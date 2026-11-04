@@ -49,3 +49,11 @@ export const BookmarkIcon = ({ filled = false, size = 18 }: { filled?: boolean; 
     <path d="M5.5 3h9a.5.5 0 0 1 .5.5V17l-5-3.4L5 17V3.5a.5.5 0 0 1 .5-.5z" />
   </svg>
 )
+
+export const PrintIcon = ({ size = 16 }: { size?: number }) => (
+  <svg {...iconProps} width={size} height={size}>
+    <path d="M5.5 7.5V3h9v4.5" />
+    <path d="M5.5 14.5H4a1.5 1.5 0 0 1-1.5-1.5V9A1.5 1.5 0 0 1 4 7.5h12A1.5 1.5 0 0 1 17.5 9v4a1.5 1.5 0 0 1-1.5 1.5h-1.5" />
+    <path d="M5.5 11.5h9V17h-9z" />
+  </svg>
+)
