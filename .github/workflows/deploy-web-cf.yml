@@ -1,0 +1,50 @@
+# 打 w 前缀的 tag 时，通过 Cloudflare Workers Builds 的部署钩子触发 web/ 的构建与部署。
+#
+#   git tag w1.0.0 && git push origin w1.0.0      # 或 w.1.0.0
+#
+# - 部署钩子 URL 存在仓库 secret CF_WORKERS_DEPLOY_HOOK 中（持有该 URL 即可触发部署，所以不能写进仓库）。
+# - 钩子在 Cloudflare 控制台中绑定了分支，构建的是该分支的最新提交，而不是 tag 指向的提交；
+#   所以请在部署分支（feat/recipe-viewer）的最新提交上打 tag。
+# - 只在本仓库运行：fork 拿不到 secret，也不应该去触发本项目的部署。
+name: Deploy web to Cloudflare Workers
+
+on:
+  push:
+    tags:
+      - 'w[0-9]*'
+      - 'w.[0-9]*'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: deploy-web-cf
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    if: github.repository == 'zcq100/HowToCook'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger Cloudflare Workers Build
+        env:
+          DEPLOY_HOOK: ${{ secrets.CF_WORKERS_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$DEPLOY_HOOK" ]; then
+            echo "::error::未配置 secret CF_WORKERS_DEPLOY_HOOK"
+            exit 1
+          fi
+          status=$(curl -sS -o response.json -w '%{http_code}' -X POST "$DEPLOY_HOOK")
+          echo "HTTP $status"
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ] || [ "$(jq -r '.success' response.json)" != "true" ]; then
+            echo "::error::触发 Cloudflare 构建失败"
+            jq '{success, errors, messages}' response.json || cat response.json
+            exit 1
+          fi
+          build_uuid=$(jq -r '.result.build_uuid // empty' response.json)
+          echo "已触发 Cloudflare Workers 构建 ${build_uuid}（tag: ${GITHUB_REF_NAME}）"
+          echo "### 已触发 Cloudflare Workers 构建" >> "$GITHUB_STEP_SUMMARY"
+          echo "- tag / ref: \`${GITHUB_REF_NAME}\`" >> "$GITHUB_STEP_SUMMARY"
+          [ -n "$build_uuid" ] && echo "- build: \`${build_uuid}\`" >> "$GITHUB_STEP_SUMMARY"
+          true
