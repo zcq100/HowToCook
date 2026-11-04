@@ -136,7 +136,7 @@ button { cursor: pointer; }
   display: flex; align-items: center; justify-content: space-between; gap: 8px; white-space: nowrap;
   font-family: var(--font-display); font-weight: 600; font-size: 16px; margin-bottom: 12px;
 }
-.brand em { font-style: normal; color: var(--accent-text); font-weight: 500; margin-left: 4px; }
+.brand em { font-style: normal; color: var(--accent-text); font-weight: 600; }
 .repo-link { display: flex; padding: 4px; margin: -4px; color: var(--muted); border-radius: 4px; }
 .repo-link:hover { color: var(--text); }
 .brand-actions { display: flex; align-items: center; gap: 10px; }
@@ -192,7 +192,8 @@ button { cursor: pointer; }
 .cats button.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .count { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
 .list { list-style: none; margin: 0 -12px; padding: 0; overflow-y: auto; flex: 1; }
-.list button {
+/* 菜谱列表与图文内容用展示字体（典藏下为衬线体，浅色 / 深色下与界面同为黑体） */
+.list button { font-family: var(--font-display);
   display: flex; flex-direction: column; gap: 3px; width: 100%;
   border: 0; background: transparent; padding: 7px 14px 7px 15px; text-align: left;
 }
@@ -339,7 +340,7 @@ button { cursor: pointer; }
 .react-flow__minimap { background: var(--minimap-bg); }
 
 /* ---------- 图文视图 ---------- */
-.text-view { max-width: 760px; margin: 0 auto; padding: 28px 24px 60px; line-height: 1.75; }
+.text-view { font-family: var(--font-display); max-width: 760px; margin: 0 auto; padding: 28px 24px 60px; line-height: 1.75; }
 .text-view h1 { margin: 0 0 4px; }
 .text-view .meta { display: flex; gap: 14px; color: var(--muted); margin: 0 0 16px; }
 .text-view .meta-cat { display: inline-flex; align-items: center; gap: 4px; }
@@ -499,8 +500,8 @@ button { cursor: pointer; }
 :root[data-theme='paper'] .view { background: radial-gradient(ellipse at 50% 0%, rgba(255, 250, 238, .7), transparent 70%); }
 
 /* 字体与排版 */
-:root[data-theme='paper'] .brand { font-size: 17px; letter-spacing: .01em; }
-:root[data-theme='paper'] .brand em { color: var(--wine); font-weight: 600; letter-spacing: .06em; }
+:root[data-theme='paper'] .brand { font-size: 18px; }
+:root[data-theme='paper'] .brand em { color: var(--wine); font-weight: 600; letter-spacing: .14em; }
 :root[data-theme='paper'] .topbar h1 { letter-spacing: .08em; }
 :root[data-theme='paper'] .sidebar { border-right: 0; box-shadow: inset -1px 0 var(--line), inset -4px 0 0 -3px var(--line); }
 :root[data-theme='paper'] .topbar { border-bottom: 3px double var(--line); }
@@ -541,7 +542,7 @@ button { cursor: pointer; }
   content: ''; flex: 1; max-width: 140px; height: 3px;
   border-top: 1px solid var(--gold-soft); border-bottom: 1px solid var(--gold-soft);
 }
-:root[data-theme='paper'] .text-view h2 small { font-family: var(--font-ui); font-weight: 400; letter-spacing: 0; }
+:root[data-theme='paper'] .text-view h2 small { font-weight: 400; letter-spacing: 0; }
 
 /* 原料表：菜单式点状引线 */
 :root[data-theme='paper'] .text-view table,

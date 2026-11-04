@@ -85,7 +85,7 @@ export default function App() {
       <aside className="sidebar">
         <div className="brand">
           <span>
-            HowToCook <em>菜谱蓝图</em>
+            <em>菜谱蓝图</em>
           </span>
           <span className="brand-actions">
             <span className="theme-picker">
