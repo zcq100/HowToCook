@@ -1,0 +1,11 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // 必须与 Cloudflare 控制台里 Worker 的名称一致
+  "name": "howtocook",
+  "compatibility_date": "2026-11-01",
+  // 纯静态站点：只托管 Vite 构建产物，不需要 Worker 脚本
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}
