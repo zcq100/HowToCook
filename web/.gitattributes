@@ -1,0 +1,4 @@
+# web/ 里的图标和预览图是构建产物的一部分，体积很小，直接存为普通文件（不走根目录的 Git LFS 规则），
+# 这样 Cloudflare 构建时不需要拉取 LFS。
+*.png -filter -diff -merge binary
+*.jpg -filter -diff -merge binary
