@@ -2,6 +2,7 @@ import type { Recipe } from '../types'
 import { Inline, stars } from '../inline'
 import { sourceUrl } from '../config'
 import { GitHubIcon } from '../icons'
+import { CategoryIcon } from '../categoryIcons'
 
 /** 传统图文视图：作为对照，也方便后续扩展更多阅览方式 */
 export default function TextView({ recipe }: { recipe: Recipe }) {
@@ -14,7 +15,10 @@ export default function TextView({ recipe }: { recipe: Recipe }) {
         <p className="meta">
           <span className="stars">{stars(recipe.difficulty)}</span>
           {recipe.calories && <span>{recipe.calories}</span>}
-          <span>{recipe.categoryName}</span>
+          <span className="meta-cat">
+            <CategoryIcon id={recipe.category} size={15} />
+            {recipe.categoryName}
+          </span>
         </p>
         {recipe.images.length > 0 && (
           <div className={'gallery' + (recipe.images.length > 1 ? ' multi' : '')}>

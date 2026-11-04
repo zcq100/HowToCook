@@ -5,6 +5,7 @@ import { REPO_URL } from './config'
 import { BookmarkIcon, GitHubIcon, MenuIcon, MoonIcon, PaperIcon, SunIcon } from './icons'
 import { THEME_LABEL, THEME_ORDER, useTheme, type Theme } from './useTheme'
 import { useFavorites } from './useFavorites'
+import { CategoryIcon } from './categoryIcons'
 import BlueprintView from './views/BlueprintView'
 import TextView from './views/TextView'
 
@@ -141,10 +142,12 @@ export default function App() {
             </button>
           )}
           <button className={category === 'all' ? 'on' : ''} onClick={() => setCategory('all')}>
+            <CategoryIcon id="all" />
             全部
           </button>
           {categories.map(([id, name]) => (
             <button key={id} className={category === id ? 'on' : ''} onClick={() => setCategory(id)}>
+              <CategoryIcon id={id} />
               {name}
             </button>
           ))}

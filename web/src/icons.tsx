@@ -10,7 +10,7 @@ export const MenuIcon = () => (
   </svg>
 )
 
-const iconProps = {
+export const iconProps = {
   width: 18,
   height: 18,
   viewBox: '0 0 20 20',
