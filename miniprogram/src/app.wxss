@@ -10,6 +10,7 @@ page {
   --wine: #7a2e26;
   --gold: #a7843f;
   --font-ui: 'HowToCookWeChat', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-reading: 'Songti SC', 'STSongti-SC-Regular', STSong, 'Songti TC', 'Source Han Serif SC', 'Noto Serif CJK SC', 'Noto Serif SC', SimSun, ui-serif, serif;
   --display: var(--font-ui);
   background: var(--paper);
   color: var(--ink);

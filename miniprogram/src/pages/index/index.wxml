@@ -6,8 +6,8 @@
   </view>
 
   <view class="categories">
-    <view class="category {{category === '' ? 'selected' : ''}}" data-id="" data-name="全部菜谱" bindtap="onCategory">全部</view>
-    <view wx:for="{{categories}}" wx:key="id" class="category {{category === item.id ? 'selected' : ''}}" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="onCategory">{{item.name}}</view>
+    <view class="category {{category === '' ? 'selected' : ''}}" data-id="" data-name="全部菜谱" bindtap="onCategory"><image class="category-icon" src="{{category === '' ? allSelectedIcon : allIcon}}" aria-hidden="true" /><text>全部</text></view>
+    <view wx:for="{{categories}}" wx:key="id" class="category {{category === item.id ? 'selected' : ''}}" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="onCategory"><image class="category-icon" src="{{category === item.id ? item.selectedIcon : item.icon}}" aria-hidden="true" /><text>{{item.name}}</text></view>
   </view>
 </view>
 <view class="library-content">

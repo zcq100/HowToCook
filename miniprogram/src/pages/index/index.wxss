@@ -2,4 +2,9 @@
 
 .difficulty{display:flex;align-items:center;gap:8rpx;flex-shrink:0;color:#76644f;padding:8rpx 0}.difficulty-pip{width:10rpx;height:10rpx;transform:rotate(45deg);border:1rpx solid #c7b48e}.difficulty-pip.filled{background:currentColor;border-color:currentColor}.difficulty-1{color:#56704b}.difficulty-2{color:#71804b}.difficulty-3{color:#916b29}.difficulty-4{color:#a05735}.difficulty-5{color:#7a2e26}
 
- .categories{display:flex;flex-wrap:wrap;gap:12rpx 16rpx;width:100%;border-bottom:1rpx solid var(--line);padding:24rpx 0}.category{display:flex;align-items:center;justify-content:center;min-height:80rpx;padding:12rpx 24rpx;font-size:28rpx;line-height:1.5;color:var(--muted);border:1rpx solid transparent;border-radius:8rpx;white-space:nowrap}.category.selected{color:var(--wine);background:#efe2c6;border-color:#d3c3a0;font-weight:600}
+
+/* H5 paper palette: restrained paper chips with wine selection, on the cream page. */
+.categories{display:flex;flex-wrap:wrap;gap:10rpx;width:100%;margin-top:20rpx}
+.category{display:flex;align-items:center;justify-content:center;gap:10rpx;min-height:72rpx;padding:8rpx 16rpx;font-size:25rpx;line-height:1.5;color:var(--muted);background:transparent;border:1rpx solid var(--line);border-radius:4rpx;white-space:nowrap}
+.category.selected{color:#fbf3e2;background:var(--wine);border-color:var(--wine);font-weight:500}
+.category-icon{width:28rpx;height:28rpx;display:block;flex-shrink:0}

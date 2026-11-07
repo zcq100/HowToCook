@@ -1,10 +1,11 @@
+import { categoryIcons } from '../../data/category-icons'
 import { repository } from '../../services/repository'
 
 Page({
-  data: { categories: [] as Awaited<ReturnType<typeof repository.listCategories>>, category: '', categoryName: '全部菜谱', difficultyLevels: [1, 2, 3, 4, 5], recipes: [] as Awaited<ReturnType<typeof repository.listRecipes>>['items'], query: '', loading: true, error: '', nextCursor: null as string | null, totalCount: 0 },
+  data: { allIcon: categoryIcons.all.normal, allSelectedIcon: categoryIcons.all.selected, categories: [] as (Awaited<ReturnType<typeof repository.listCategories>>[number] & { icon: string; selectedIcon: string })[], category: '', categoryName: '全部菜谱', difficultyLevels: [1, 2, 3, 4, 5], recipes: [] as Awaited<ReturnType<typeof repository.listRecipes>>['items'], query: '', loading: true, error: '', nextCursor: null as string | null, totalCount: 0 },
   requestVersion: 0,
   async onLoad() {
-    try { this.setData({ categories: await repository.listCategories() }) }
+    try { this.setData({ categories: (await repository.listCategories()).map(item => ({ ...item, icon: categoryIcons[item.id].normal, selectedIcon: categoryIcons[item.id].selected })) }) }
     catch { this.setData({ loading: false, error: '分类加载失败，请重试' }); return }
     await this.loadRecipes()
   },

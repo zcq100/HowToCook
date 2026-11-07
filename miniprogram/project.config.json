@@ -1,5 +1,5 @@
 {
-  "description": "HowToCook 原生微信小程序",
+  "description": "赛博菜谱：中式菜谱检索、原料蓝图与分步跟做。",
   "miniprogramRoot": "dist/",
   "compileType": "miniprogram",
   "appid": "wx5b929ed10b5ccafc",

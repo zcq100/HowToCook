@@ -1,8 +1,11 @@
 {
   "name": "howtocook-miniprogram",
+  "version": "0.1.1",
+  "author": "zcq100",
+  "description": "赛博菜谱：中式菜谱检索、原料蓝图与分步跟做。",
   "private": true,
   "scripts": {
-    "data": "node scripts/build-data.mjs",
+    "data": "node scripts/build-data.mjs && node scripts/build-category-icons.mjs",
     "typecheck": "tsc --noEmit",
     "build": "npm run data && node scripts/clean.mjs && tsc && node scripts/package.mjs",
     "verify": "node scripts/verify.mjs",
