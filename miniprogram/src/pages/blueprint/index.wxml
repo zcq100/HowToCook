@@ -1,0 +1,25 @@
+<view class="blueprint-page">
+  <view class="blueprint-header"><view class="blueprint-name">{{name || '烹饪蓝图'}}</view><view class="blueprint-hint">拖动浏览 · 双指缩放 · 点击步骤查看关联</view></view>
+  <view wx:if="{{loading}}" class="blueprint-message">正在展开蓝图…</view>
+  <view wx:elif="{{error}}" class="blueprint-message">{{error}}</view>
+  <view wx:else class="graph-viewport" catchtouchstart="onTouchStart" catchtouchmove="onTouchMove" catchtouchend="onTouchEnd" catchtouchcancel="onTouchEnd">
+    <canvas id="connections" type="2d" class="connection-canvas"></canvas>
+    <view class="graph-layer" style="width:{{width}}px;height:{{height}}px;transform:translate({{x}}px,{{y}}px) scale({{scale}});">
+      <view wx:for="{{nodes}}" wx:key="id" class="graph-node node-{{item.kind}} {{item.active ? 'node-active' : ''}} {{activeIndex >= 0 && !item.active ? 'node-muted' : ''}} {{item.unlinked ? 'node-unlinked' : ''}}" style="left:{{item.x}}px;top:{{item.y}}px;width:{{item.width}}px;" data-id="{{item.id}}" data-index="{{item.stepIndex}}" bindtap="selectNode">
+        <view wx:if="{{item.kind === 'ingredient'}}" class="data-pin output-pin"></view>
+        <view wx:if="{{item.kind === 'step'}}" class="data-pin input-pin"></view>
+        <view wx:if="{{item.kind === 'step' || item.kind === 'result'}}" class="flow-pin top-pin"></view>
+        <view wx:if="{{item.kind === 'step' || item.kind === 'start'}}" class="flow-pin bottom-pin"></view>
+        <view class="node-heading">{{item.title}}<text wx:if="{{item.kind === 'ingredient'}}" class="node-kind">{{item.meta}}</text></view>
+        <view class="node-body">{{item.text}}</view>
+        <view wx:for="{{item.notes}}" wx:for-item="note" wx:key="*this" class="node-note">{{note}}</view>
+        <view wx:if="{{item.meta && item.kind === 'step'}}" class="node-meta">{{item.meta}}</view>
+        <view wx:if="{{item.unlinked}}" class="node-meta">未自动关联 · 请参考原文</view>
+      </view>
+    </view>
+  </view>
+  <view wx:if="{{!loading && !error}}" class="graph-controls">
+    <view class="zoom-controls"><button bindtap="zoomOut" aria-label="缩小">−</button><text>{{zoomLabel}}</text><button bindtap="zoomIn" aria-label="放大">＋</button><button bindtap="resetView">总览</button><button bindtap="locateStep">定位</button></view>
+    <view class="step-controls"><button disabled="{{activeIndex <= 0}}" bindtap="previousStep">上一步</button><text>{{currentLabel}}</text><button disabled="{{activeIndex >= total - 1}}" bindtap="nextStep">下一步</button></view>
+  </view>
+</view>

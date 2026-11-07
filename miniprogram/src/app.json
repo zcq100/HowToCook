@@ -1,5 +1,5 @@
 {
-  "pages": ["pages/index/index", "pages/recipe/index"],
+  "pages": ["pages/index/index", "pages/recipe/index", "pages/blueprint/index"],
   "window": {
     "navigationBarTitleText": "今天做什么",
     "navigationBarBackgroundColor": "#f7f3ea",

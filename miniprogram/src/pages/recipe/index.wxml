@@ -5,6 +5,7 @@
     <view class="eyebrow">{{recipe.categoryName}} · 难度 {{recipe.difficulty}} / 5</view>
     <view class="title">{{recipe.name}}</view>
     <view class="intro muted">{{recipe.description}}</view>
+    <button class="share-button" bindtap="openBlueprint">展开烹饪蓝图 →</button>
     <view class="photo-placeholder">把好味道，留给这一餐。<view class="small">验证版暂不加载菜谱图片</view></view>
     <view class="section-title">备好原料与工具</view>
     <view wx:if="{{recipe.servingsNote}}" class="muted servings">{{recipe.servingsNote}}</view>

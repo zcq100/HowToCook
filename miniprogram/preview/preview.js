@@ -84,7 +84,10 @@ function toast(message) {
 globalThis.Page = definition => { current = { ...definition, data: structuredClone(definition.data), setData(patch) { Object.assign(this.data, patch); render() } } }
 globalThis.wx = {
   setNavigationBarTitle({ title: text }) { title.textContent = text },
-  navigateTo({ url }) { location.hash = url },
+  navigateTo({ url }) {
+    if (url.startsWith('/pages/blueprint/')) { toast('蓝图使用原生触摸与 Canvas，请在微信预览版中体验'); return }
+    location.hash = url
+  },
   reLaunch({ url }) { location.hash = url },
 }
 const styles = await (await fetch('/dist/app.wxss')).text()

@@ -27,6 +27,7 @@ Page({
     finally { this.setData({ loading: false }) }
   },
   onRetry() { void this.loadRecipe() },
+  openBlueprint() { wx.navigateTo({ url: `/pages/blueprint/index?id=${encodeURIComponent(this.recipeId)}` }) },
   goHome() { wx.reLaunch({ url: '/pages/index/index' }) },
   onShareAppMessage() {
     return { title: this.data.recipe?.name || '家常菜谱', path: `/pages/recipe/index?id=${encodeURIComponent(this.recipeId)}` }
