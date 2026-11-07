@@ -1,0 +1,10 @@
+{
+  "pages": ["pages/index/index", "pages/recipe/index"],
+  "window": {
+    "navigationBarTitleText": "今天做什么",
+    "navigationBarBackgroundColor": "#f7f3ea",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f7f3ea"
+  },
+  "sitemapLocation": "sitemap.json"
+}

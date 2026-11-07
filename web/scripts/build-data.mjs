@@ -173,7 +173,7 @@ const extractHeat = (text) => {
   return m ? m[1] : null
 }
 
-function parseRecipe(file) {
+export function parseRecipe(file) {
   const rel = path.relative(dishesDir, file)
   const [category] = rel.split(path.sep)
   const md = stripComments(fs.readFileSync(file, 'utf8'))
@@ -383,6 +383,8 @@ function dropImages(recipe, failed) {
   return recipe
 }
 
+// Importing the parser must not download images or modify Web output.
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
 const files = walk(dishesDir).filter((f) => !f.includes(`${path.sep}template${path.sep}`))
 fs.rmSync(path.join(outDir, 'images'), { recursive: true, force: true })
 const parsed = files.map(parseRecipe).sort((a, b) => a.name.localeCompare(b.name, 'zh'))
@@ -407,3 +409,5 @@ const unlinked = recipes.reduce(
   0,
 )
 console.log(`[data] ${recipes.length} 道菜谱，${withImg} 道有成品图，${unlinked} 个原料未在步骤中被识别`)
+
+}

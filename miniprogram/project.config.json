@@ -1,0 +1,12 @@
+{
+  "description": "HowToCook 原生微信小程序",
+  "miniprogramRoot": "dist/",
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "howtocook-native",
+  "setting": {
+    "es6": true,
+    "minified": true,
+    "urlCheck": true
+  }
+}

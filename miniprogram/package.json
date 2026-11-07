@@ -1,0 +1,15 @@
+{
+  "name": "howtocook-miniprogram",
+  "private": true,
+  "scripts": {
+    "data": "node scripts/build-samples.mjs",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run data && tsc && node scripts/package.mjs",
+    "verify": "node scripts/verify.mjs",
+    "preview": "npm run build && node scripts/preview.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "miniprogram-api-typings": "^5.2.1"
+  }
+}

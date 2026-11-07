@@ -1,0 +1,28 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="panel muted">正在准备菜谱…</view>
+  <view wx:elif="{{error}}" class="panel"><view>{{error}}</view><button bindtap="onRetry">重试</button><button bindtap="goHome">查看其他菜谱</button></view>
+  <block wx:elif="{{recipe}}">
+    <view class="eyebrow">{{recipe.categoryName}} · 难度 {{recipe.difficulty}} / 5</view>
+    <view class="title">{{recipe.name}}</view>
+    <view class="intro muted">{{recipe.description}}</view>
+    <view class="photo-placeholder">把好味道，留给这一餐。<view class="small">验证版暂不加载菜谱图片</view></view>
+    <view class="section-title">备好原料与工具</view>
+    <view wx:if="{{recipe.servingsNote}}" class="muted servings">{{recipe.servingsNote}}</view>
+    <view class="panel ingredients">
+      <view wx:for="{{recipe.ingredients}}" wx:key="id" class="ingredient">
+        <view class="ingredient-name">{{item.name}}<text wx:if="{{item.kind === 'tool'}}" class="small muted"> · 工具</text></view>
+        <view class="muted">{{item.amountsText}}</view>
+      </view>
+    </view>
+    <view class="section-title">开始做菜</view>
+    <view wx:for="{{recipe.steps}}" wx:key="id" class="panel step">
+      <view class="step-heading">第 {{index + 1}} 步 <text class="heat">{{item.heat || ''}}</text></view>
+      <view class="step-text" selectable>{{item.text}}</view>
+      <view wx:for="{{item.notes}}" wx:for-item="note" wx:key="*this" class="step-note" selectable>{{note}}</view>
+      <view wx:if="{{item.times.length}}" class="time">参考时长 · {{item.timeLabel}}</view>
+    </view>
+    <block wx:if="{{recipe.tips.length}}"><view class="section-title">再叮嘱几句</view><view class="panel"><view wx:for="{{recipe.tips}}" wx:key="*this" class="tip" selectable>{{item}}</view></view></block>
+    <button class="share-button" open-type="share">分享这道菜</button>
+    <view class="footer muted" bindtap="goHome">回到全部菜谱</view>
+  </block>
+</view>
