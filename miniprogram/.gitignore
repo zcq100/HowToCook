@@ -2,3 +2,9 @@ node_modules/
 build/
 dist/
 project.private.config.json
+
+# Local WeChat upload credentials and generated QR codes
+.secrets/
+artifacts/
+*.key
+*.pem

@@ -6,10 +6,14 @@
     "typecheck": "tsc --noEmit",
     "build": "npm run data && tsc && node scripts/package.mjs",
     "verify": "node scripts/verify.mjs",
-    "preview": "npm run build && node scripts/preview.mjs"
+    "preview": "npm run build && node scripts/preview.mjs",
+    "wx:check": "node scripts/wechat-ci.mjs check",
+    "wx:preview": "npm run build && npm run verify && node scripts/wechat-ci.mjs preview",
+    "wx:upload": "npm run build && npm run verify && node scripts/wechat-ci.mjs upload"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
-    "miniprogram-api-typings": "^5.2.1"
+    "miniprogram-api-typings": "^5.2.1",
+    "miniprogram-ci": "^2.1.31",
+    "typescript": "^5.9.3"
   }
 }

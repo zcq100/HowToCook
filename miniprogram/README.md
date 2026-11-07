@@ -13,7 +13,7 @@ npm run verify
 
 在微信开发者工具中导入 `miniprogram/` 目录（不是仓库根目录，也不是 `src/`），工具读取 `project.config.json`，以 `dist/` 为小程序根目录。TypeScript 已在本地编译，不需要开发者工具再编译 TS，也不需要“构建 npm”。修改源码后重新执行 `npm run build`。
 
-配置中的 `touristappid` 用于本地初步查看；真机预览、分享验证和上传发布需替换为你有权限的小程序 AppID。个人工具设置放在已忽略的 `project.private.config.json`，不要提交密钥。
+已配置 AppID `wx5b929ed10b5ccafc`；真机预览、分享验证和上传需使用有相应权限的微信账号。个人工具设置放在已忽略的 `project.private.config.json`，不要提交密钥。
 
 ## 浏览器界面预览
 
@@ -38,3 +38,27 @@ npm run verify
 7. 断网重启，确认分类、搜索和详情仍可用；查看包分析确认没有全量菜谱和照片。
 
 当前尚未接入远程 API、图片、收藏或分步计时；它们属于后续里程碑。此环境已完成 TypeScript 和脚本校验，开发者工具 WXML 编译及 iOS/Android 真机验收仍需执行。
+
+## 官方 CI 手机预览与上传
+
+接入微信官方 `miniprogram-ci`，不依赖桌面开发者工具。小程序管理员需在微信公众平台「开发管理 → 开发设置 → 小程序代码上传」下载上传密钥，并将执行机器的公网出口 IP 配置到上传 IP 白名单。
+
+默认密钥路径为 `miniprogram/.secrets/private.wx5b929ed10b5ccafc.key`，也可通过 `WECHAT_PRIVATE_KEY_PATH` 指定其他路径（相对路径以 `miniprogram/` 为基准）。密钥目录、`.key` / `.pem` 文件以及二维码产物均已忽略，不放入小程序包或 Git。此处需要代码上传密钥，不是 AppSecret。
+
+```bash
+cd miniprogram
+npm run wx:check
+npm run wx:preview
+```
+
+`wx:check` 只做本地检查，不连接微信。`wx:preview` 重新构建、校验，再向微信请求生成 `artifacts/preview.jpg`，使用有权限的手机微信扫码查看实际小程序。缺少密钥时会停止并说明路径；白名单或权限错误按微信返回的提示处理。
+
+需要上传开发版本时单独执行：
+
+```bash
+WECHAT_VERSION=0.1.0 npm run wx:upload
+```
+
+上传后可在公众平台将开发版本设为体验版并管理体验成员；上传不等于提交审核或正式发布。浏览器预览仍使用 `npm run preview`，与手机微信预览是两个独立入口。
+
+参考：[微信官方 miniprogram-ci](https://github.com/wechat-miniprogram/miniprogram-ci-dist)。

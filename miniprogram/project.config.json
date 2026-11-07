@@ -2,7 +2,7 @@
   "description": "HowToCook 原生微信小程序",
   "miniprogramRoot": "dist/",
   "compileType": "miniprogram",
-  "appid": "touristappid",
+  "appid": "wx5b929ed10b5ccafc",
   "projectname": "howtocook-native",
   "setting": {
     "es6": true,
