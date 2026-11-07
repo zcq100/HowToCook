@@ -1,19 +1,26 @@
-<view class="page">
-  <view class="eyebrow">HowToCook · 家常菜谱</view>
-  <view class="title">今天，认真吃饭。</view>
-  <view class="muted intro">20 道精选样本，先从一顿家常饭开始。</view>
-  <input class="search" placeholder="搜菜名或食材，如鸡蛋、豆腐" value="{{query}}" bindinput="onQuery" confirm-type="search" aria-label="搜索菜谱" />
-  <scroll-view scroll-x class="categories">
-    <view class="chip {{category === '' ? 'selected' : ''}}" data-id="" bindtap="onCategory">全部</view>
-    <view wx:for="{{categories}}" wx:key="id" class="chip {{category === item.id ? 'selected' : ''}}" data-id="{{item.id}}" bindtap="onCategory">{{item.name}} {{item.count}}</view>
-  </scroll-view>
-  <view wx:if="{{error}}" class="panel"><text>{{error}}</text><button bindtap="onRetry">重新加载</button></view>
-  <view wx:elif="{{!loading && !recipes.length}}" class="panel muted">没有找到，换个菜名或食材试试。</view>
-  <view wx:for="{{recipes}}" wx:key="id" class="recipe-card" data-id="{{item.id}}" bindtap="openRecipe" hover-class="pressed">
-    <view class="category-name">{{item.categoryName}} · 难度 {{item.difficulty}} / 5</view>
-    <view class="recipe-name">{{item.name}}</view>
-    <view class="description">{{item.description || '看看需要哪些原料，跟着步骤做一遍。'}}</view>
-    <view class="card-footer">查看做法 <text>→</text></view>
+<view class="library-tools">
+  <view class="search-field">
+    <view class="search-icon" aria-hidden="true"></view>
+    <input class="search" placeholder="搜菜名或食材" placeholder-class="search-placeholder" value="{{query}}" bindinput="onQuery" confirm-type="search" aria-label="搜索菜名或食材" />
+    <button wx:if="{{query}}" class="search-clear" bindtap="clearQuery" aria-label="清除搜索">×</button>
   </view>
-  <view class="muted footer">{{loading ? '正在找菜谱…' : '验证版 · 菜谱文本已内置，可离线阅读'}}</view>
+
+  <view class="categories">
+    <view class="category {{category === '' ? 'selected' : ''}}" data-id="" data-name="全部菜谱" bindtap="onCategory">全部</view>
+    <view wx:for="{{categories}}" wx:key="id" class="category {{category === item.id ? 'selected' : ''}}" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="onCategory">{{item.name}}</view>
+  </view>
+</view>
+<view class="library-content">
+  <view class="results-heading"><view>{{query ? '搜索结果' : categoryName}}</view><text>{{totalCount}} 道</text></view>
+  <view wx:if="{{error}}" class="empty-state"><view class="empty-title">暂时没能加载菜谱</view><view>{{error}}</view><button class="secondary-button" bindtap="onRetry">重新加载</button></view>
+  <view wx:elif="{{!loading && !recipes.length}}" class="empty-state"><view class="empty-title">换个食材试试</view><view>没有匹配的菜谱，可以试试“豆腐”或“鸡蛋”</view><button class="secondary-button" bindtap="resetFilters">查看全部菜谱</button></view>
+  <view class="recipe-list">
+    <view wx:for="{{recipes}}" wx:key="id" class="recipe-card" data-id="{{item.id}}" bindtap="openRecipe" hover-class="pressed" role="button" aria-label="{{item.name}}，难度 {{item.difficulty}} 级，共 5 级，查看菜谱">
+      <view class="recipe-ordinal">{{index + 1 < 10 ? '0' : ''}}{{index + 1}}</view>
+      <view class="recipe-summary"><view class="recipe-name">{{item.name}}</view></view>
+      <view class="difficulty difficulty-{{item.difficulty}}" aria-hidden="true"><view wx:for="{{difficultyLevels}}" wx:for-item="level" wx:key="*this" class="difficulty-pip {{level <= item.difficulty ? 'filled' : ''}}"></view></view>
+      <text class="row-arrow" aria-hidden="true">›</text>
+    </view>
+  </view>
+  <view class="footer">{{loading ? '正在查找菜谱…' : nextCursor ? '继续向下查看更多' : '已显示全部结果'}}</view>
 </view>

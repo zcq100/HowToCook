@@ -1,0 +1,5 @@
+<view class="recipe-tabs" role="tablist" aria-label="菜谱功能">
+  <view class="recipe-tab {{currentView === 'recipe' ? 'tab-active' : ''}}" data-view="recipe" bindtap="switchView" role="tab" aria-selected="{{currentView === 'recipe'}}">菜谱</view>
+  <view class="recipe-tab {{currentView === 'cook' ? 'tab-active' : ''}}" data-view="cook" bindtap="switchView" role="tab" aria-selected="{{currentView === 'cook'}}">跟做</view>
+  <view class="recipe-tab {{currentView === 'blueprint' ? 'tab-active' : ''}}" data-view="blueprint" bindtap="switchView" role="tab" aria-selected="{{currentView === 'blueprint'}}">蓝图</view>
+</view>

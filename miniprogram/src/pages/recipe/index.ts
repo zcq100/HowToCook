@@ -1,13 +1,17 @@
+import { trimName } from '../../services/recipe-text'
+import { switchView } from '../../services/recipe-navigation'
 import { repository } from '../../services/repository'
 import type { Recipe } from '../../../../packages/recipe-core/types'
 
 type RecipeView = Omit<Recipe, 'ingredients' | 'steps'> & {
   ingredients: (Recipe['ingredients'][number] & { amountsText: string })[]
   steps: (Recipe['steps'][number] & { timeLabel: string })[]
+  foodIngredients: (Recipe['ingredients'][number] & { amountsText: string })[]
+  toolsText: string
 }
 
 Page({
-  data: { recipe: null as RecipeView | null, loading: true, error: '' },
+  data: { difficultyLevels: [1, 2, 3, 4, 5], currentView: 'recipe', recipe: null as RecipeView | null, loading: true, error: '' },
   recipeId: '',
   onLoad(options: Record<string, string | undefined>) {
     try { this.recipeId = decodeURIComponent(options.id || '') }
@@ -19,7 +23,9 @@ Page({
     try {
       const recipe = await repository.getRecipe(this.recipeId)
       this.setData({ recipe: { ...recipe,
-        ingredients: recipe.ingredients.map(item => ({ ...item, amountsText: item.amounts.join('；') || '按原文及实际需要准备' })),
+        ingredients: recipe.ingredients.map(item => ({ ...item, amountsText: item.amounts.map(amount => trimName(item.name, amount)).join('；') || '按需准备' })),
+        foodIngredients: recipe.ingredients.filter(item => item.kind === 'ingredient').map(item => ({ ...item, amountsText: item.amounts.map(amount => trimName(item.name, amount)).join('；') || '—' })),
+        toolsText: recipe.ingredients.filter(item => item.kind === 'tool').map(item => item.name).join('、'),
         steps: recipe.steps.map(step => ({ ...step, timeLabel: step.times.join(' / ') })),
       } })
       wx.setNavigationBarTitle({ title: recipe.name })
@@ -27,7 +33,7 @@ Page({
     finally { this.setData({ loading: false }) }
   },
   onRetry() { void this.loadRecipe() },
-  openBlueprint() { wx.navigateTo({ url: `/pages/blueprint/index?id=${encodeURIComponent(this.recipeId)}` }) },
+  switchView,
   goHome() { wx.reLaunch({ url: '/pages/index/index' }) },
   onShareAppMessage() {
     return { title: this.data.recipe?.name || '家常菜谱', path: `/pages/recipe/index?id=${encodeURIComponent(this.recipeId)}` }

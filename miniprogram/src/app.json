@@ -1,10 +1,15 @@
 {
-  "pages": ["pages/index/index", "pages/recipe/index", "pages/blueprint/index"],
+  "pages": [
+    "pages/index/index",
+    "pages/recipe/index",
+    "pages/blueprint/index",
+    "pages/cook/index"
+  ],
   "window": {
-    "navigationBarTitleText": "今天做什么",
-    "navigationBarBackgroundColor": "#f7f3ea",
+    "navigationBarTitleText": "赛博菜谱",
+    "navigationBarBackgroundColor": "#fbf6eb",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#f7f3ea"
+    "backgroundColor": "#fbf6eb"
   },
   "sitemapLocation": "sitemap.json"
 }

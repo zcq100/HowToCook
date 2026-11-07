@@ -1,16 +1,16 @@
 <view class="blueprint-page">
-  <view class="blueprint-header"><view class="blueprint-name">{{name || '烹饪蓝图'}}</view><view class="blueprint-hint">拖动浏览 · 双指缩放 · 点击步骤查看关联</view></view>
+  <include src="../../templates/recipe-tabs.wxml" />
   <view wx:if="{{loading}}" class="blueprint-message">正在展开蓝图…</view>
   <view wx:elif="{{error}}" class="blueprint-message">{{error}}</view>
   <view wx:else class="graph-viewport" catchtouchstart="onTouchStart" catchtouchmove="onTouchMove" catchtouchend="onTouchEnd" catchtouchcancel="onTouchEnd">
-    <canvas id="connections" type="2d" class="connection-canvas"></canvas>
     <view class="graph-layer" style="width:{{width}}px;height:{{height}}px;transform:translate({{x}}px,{{y}}px) scale({{scale}});">
-      <view wx:for="{{nodes}}" wx:key="id" class="graph-node node-{{item.kind}} {{item.active ? 'node-active' : ''}} {{activeIndex >= 0 && !item.active ? 'node-muted' : ''}} {{item.unlinked ? 'node-unlinked' : ''}}" style="left:{{item.x}}px;top:{{item.y}}px;width:{{item.width}}px;" data-id="{{item.id}}" data-index="{{item.stepIndex}}" bindtap="selectNode">
-        <view wx:if="{{item.kind === 'ingredient'}}" class="data-pin output-pin"></view>
-        <view wx:if="{{item.kind === 'step'}}" class="data-pin input-pin"></view>
+      <image wx:if="{{connectionsSrc}}" src="{{connectionsSrc}}" mode="scaleToFill" class="connection-image" style="top:{{surfaceTop}}px;width:{{width}}px;height:{{surfaceHeight}}px;" binderror="onConnectionsError" aria-hidden="true" />
+      <view wx:for="{{nodes}}" wx:key="id" class="graph-node node-{{item.kind}} tone-{{item.tone}} {{item.active ? 'node-active' : ''}} {{activeIndex >= 0 && !item.active ? 'node-muted' : ''}} {{item.unlinked ? 'node-unlinked' : ''}}" style="left:{{item.x}}px;top:{{item.y}}px;width:{{item.width}}px;min-height:{{item.kind === 'step' ? 68 + item.uses.length * 18 : 0}}px;" data-id="{{item.id}}" data-index="{{item.stepIndex}}" bindtap="selectNode">
+        <view wx:if="{{item.kind === 'ingredient'}}" class="data-pin output-pin" style="background:{{item.wireColor}};"></view>
+        <block wx:if="{{item.kind === 'step'}}"><view wx:for="{{item.inputPorts}}" wx:for-item="inputPort" wx:for-index="inputIndex" wx:key="id" class="data-pin input-pin" style="top:{{56 + inputIndex * 18}}px;background:{{inputPort.color}};"></view></block>
         <view wx:if="{{item.kind === 'step' || item.kind === 'result'}}" class="flow-pin top-pin"></view>
         <view wx:if="{{item.kind === 'step' || item.kind === 'start'}}" class="flow-pin bottom-pin"></view>
-        <view class="node-heading">{{item.title}}<text wx:if="{{item.kind === 'ingredient'}}" class="node-kind">{{item.meta}}</text></view>
+        <view class="node-heading" style="border-left-color:{{item.wireColor || 'transparent'}};">{{item.title}}<text wx:if="{{item.kind === 'ingredient'}}" class="node-kind">{{item.meta}}</text></view>
         <view class="node-body">{{item.text}}</view>
         <view wx:for="{{item.notes}}" wx:for-item="note" wx:key="*this" class="node-note">{{note}}</view>
         <view wx:if="{{item.meta && item.kind === 'step'}}" class="node-meta">{{item.meta}}</view>
@@ -19,7 +19,8 @@
     </view>
   </view>
   <view wx:if="{{!loading && !error}}" class="graph-controls">
-    <view class="zoom-controls"><button bindtap="zoomOut" aria-label="缩小">−</button><text>{{zoomLabel}}</text><button bindtap="zoomIn" aria-label="放大">＋</button><button bindtap="resetView">总览</button><button bindtap="locateStep">定位</button></view>
-    <view class="step-controls"><button disabled="{{activeIndex <= 0}}" bindtap="previousStep">上一步</button><text>{{currentLabel}}</text><button disabled="{{activeIndex >= total - 1}}" bindtap="nextStep">下一步</button></view>
+    <button class="graph-prev" disabled="{{activeIndex <= 0}}" bindtap="previousStep" aria-label="上一步">←</button>
+    <view class="graph-position" aria-label="{{currentLabel}}">{{activeIndex < 0 ? '—' : activeIndex + 1}} / {{total}}</view>
+    <button class="graph-next" disabled="{{activeIndex >= total - 1}}" bindtap="nextStep">{{activeIndex < 0 ? '开始' : '下一步'}} →</button>
   </view>
 </view>

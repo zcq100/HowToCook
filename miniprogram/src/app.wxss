@@ -1,2 +1,58 @@
-page{background:#f7f3ea;color:#292e26;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;font-size:28rpx;line-height:1.65}
-.page{padding:40rpx 32rpx 64rpx;padding-bottom:calc(64rpx + env(safe-area-inset-bottom))}.eyebrow{font-size:24rpx;color:#667651}.title{font-size:52rpx;line-height:1.3;font-weight:600;margin:20rpx 0}.muted{color:#77796f}.intro{margin-bottom:32rpx}.search{background:#fffdf8;border:1rpx solid #dcded0;border-radius:16rpx;padding:22rpx 24rpx;height:48rpx}.categories{white-space:nowrap;margin:26rpx 0 32rpx;width:100%}.chip{display:inline-block;padding:12rpx 24rpx;margin-right:14rpx;border-radius:40rpx;background:#ececdf;color:#58614b}.chip.selected{background:#364b32;color:#fffdf8}.recipe-card{background:#fffdf8;border:1rpx solid #e6e4d8;border-radius:20rpx;padding:28rpx 30rpx;margin-bottom:22rpx}.pressed{opacity:.7}.category-name{font-size:23rpx;color:#71805e}.recipe-name{font-size:36rpx;font-weight:600;margin:12rpx 0}.description{color:#77796f;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.card-footer{border-top:1rpx solid #eeeee4;margin-top:22rpx;padding-top:16rpx;color:#526446;font-size:24rpx;display:flex;justify-content:space-between}.footer{text-align:center;font-size:24rpx;padding:30rpx 0}.panel{background:#fffdf8;border-radius:18rpx;padding:28rpx;margin-bottom:22rpx;border:1rpx solid #e6e4d8}.section-title{font-size:36rpx;font-weight:600;margin:44rpx 0 22rpx}.photo-placeholder{background:#e8eadc;color:#68765c;text-align:center;padding:46rpx 24rpx;border-radius:18rpx}.small{font-size:23rpx}.ingredient{padding:20rpx 0;border-bottom:1rpx solid #eeeee4}.ingredient:last-child{border:0}.ingredient-name{font-weight:500}.ingredients{padding-top:8rpx;padding-bottom:8rpx}.servings{margin-bottom:16rpx}.step-heading{color:#526446;font-weight:600;margin-bottom:18rpx;display:flex;justify-content:space-between}.heat{font-weight:400;font-size:24rpx}.step-text{font-size:30rpx;line-height:1.85}.step-note,.tip{margin-top:16rpx;color:#6c7163}.time{margin-top:22rpx;font-size:24rpx;color:#8b663d}.share-button{margin-top:38rpx;background:#364b32;color:#fffdf8;border-radius:16rpx;font-size:28rpx}button::after{border:0}
+/* H5 典藏 palette: paper, ink, wine and matte gold. No bundled fonts. */
+page {
+  --paper: #fbf6eb;
+  --surface: #fffcf5;
+  --ground: #efe6d3;
+  --ink: #2a221a;
+  --body-ink: #3b3127;
+  --muted: #76644f;
+  --line: #ddd0b4;
+  --wine: #7a2e26;
+  --gold: #a7843f;
+  --font-ui: 'HowToCookWeChat', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --display: var(--font-ui);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 30rpx;
+  line-height: 1.7;
+}
+view, button, input { box-sizing: border-box; }
+view, text, button, input { font-family: var(--font-ui); }
+button { font: inherit; border-radius: 12rpx; }
+button::after { border: 0; }
+button[disabled] { opacity: .4; }
+.page { padding: 40rpx 32rpx 64rpx; padding-bottom: calc(64rpx + env(safe-area-inset-bottom)); }
+.eyebrow { font-size: 24rpx; color: var(--wine); }
+.title { font-family: var(--font-ui); font-size: 52rpx; line-height: 1.4; font-weight: 600; margin: 16rpx 0 24rpx; }
+.muted { color: var(--muted); }
+.small { font-size: 24rpx; }
+.intro { color: var(--body-ink); margin: 24rpx 0 32rpx; line-height: 1.9; }
+.panel { background: var(--surface); border: 1rpx solid var(--line); border-radius: 12rpx; padding: 32rpx; margin-bottom: 24rpx; }
+.section-title { display: flex; align-items: center; gap: 16rpx; font-family: var(--font-ui); font-size: 36rpx; font-weight: 600; margin: 48rpx 0 24rpx; }
+.section-number { color: var(--wine); font-family: var(--font-ui); font-size: 24rpx; font-weight: 400; }
+.section-meta { margin-left: auto; color: var(--muted); font-family: var(--font-ui); font-size: 24rpx; font-weight: 400; }
+.ingredient { display: flex; align-items: baseline; justify-content: space-between; gap: 24rpx; padding: 24rpx 0; border-bottom: 1rpx solid var(--line); }
+.ingredient:last-child { border: 0; }
+.ingredient-name { color: var(--ink); flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.ingredient-amount { text-align: right; color: #5e5140; max-width: 56%; font-size: 28rpx; overflow-wrap: anywhere; }
+.ingredients { padding-top: 0; padding-bottom: 0; }
+.servings { margin: -8rpx 0 24rpx; font-size: 26rpx; }
+.step-heading { display: flex; align-items: center; gap: 16rpx; margin-bottom: 16rpx; }
+.step-number { color: var(--wine); font-family: var(--font-ui); font-size: 36rpx; font-variant-numeric: tabular-nums; }
+.step-meta { color: var(--muted); font-size: 24rpx; }
+.step-text { font-size: 32rpx; line-height: 1.95; color: var(--body-ink); white-space: pre-wrap; overflow-wrap: anywhere; }
+.step-note, .tip { margin-top: 20rpx; color: #5e5140; font-size: 28rpx; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tip:first-child { margin-top: 0; }
+.time { color: var(--wine); font-size: 26rpx; }
+.primary-button { width: 100%; background: var(--wine); color: #fffaf0; padding: 24rpx 32rpx; line-height: 1.5; font-size: 30rpx; margin: 32rpx 0 0; }
+.secondary-button { background: transparent; color: var(--wine); border: 1rpx solid var(--line); padding: 24rpx 32rpx; line-height: 1.5; font-size: 28rpx; margin: 24rpx 0 0; }
+.text-button { background: transparent; color: var(--wine); padding: 24rpx 16rpx; line-height: 1.5; font-size: 28rpx; margin: 0; }
+.pressed { opacity: .65; }
+.footer { text-align: center; font-size: 24rpx; color: var(--muted); padding: 32rpx 0; }
+.empty-state { text-align: center; padding: 64rpx 24rpx; color: var(--muted); }
+.empty-title { font-size: 36rpx; font-family: var(--font-ui); color: var(--ink); margin-bottom: 16rpx; }
+.recipe-tabs { position: sticky; top: 0; z-index: 10; flex-shrink: 0; display: flex; background: var(--paper); border-bottom: 1rpx solid var(--line); padding: 0 32rpx; }
+.recipe-tab { flex: 1; min-height: 96rpx; display: flex; align-items: center; justify-content: center; font-size: 30rpx; color: var(--muted); position: relative; }
+.recipe-tab.tab-active { color: var(--wine); font-weight: 600; }
+.recipe-tab.tab-active::after { content: ''; position: absolute; bottom: 0; left: 32%; right: 32%; height: 4rpx; background: var(--wine); }

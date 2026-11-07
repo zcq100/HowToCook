@@ -2,9 +2,9 @@
   "name": "howtocook-miniprogram",
   "private": true,
   "scripts": {
-    "data": "node scripts/build-samples.mjs",
+    "data": "node scripts/build-data.mjs",
     "typecheck": "tsc --noEmit",
-    "build": "npm run data && tsc && node scripts/package.mjs",
+    "build": "npm run data && node scripts/clean.mjs && tsc && node scripts/package.mjs",
     "verify": "node scripts/verify.mjs",
     "preview": "npm run build && node scripts/preview.mjs",
     "wx:check": "node scripts/wechat-ci.mjs check",

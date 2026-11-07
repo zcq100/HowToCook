@@ -1,0 +1,26 @@
+<include src="../../templates/recipe-tabs.wxml" />
+<view wx:if="{{!loading && !error}}" class="cook-progress" aria-label="{{completed ? '已完成全部步骤' : '当前第 ' + (stepIndex + 1) + ' 步，共 ' + total + ' 步'}}"><view wx:for="{{stepSegments}}" wx:key="*this" class="cook-segment {{completed || item < stepIndex ? 'segment-done' : ''}} {{!completed && item === stepIndex ? 'segment-active' : ''}}"></view></view>
+<view class="cook-stage">
+  <view wx:if="{{loading}}" class="empty-state">正在准备跟做步骤…</view>
+  <view wx:elif="{{error}}" class="empty-state"><view class="empty-title">暂时无法开始跟做</view><view>{{error}}</view><button class="secondary-button" bindtap="onRetry">重新加载</button></view>
+  <block wx:elif="{{step}}">
+    <view wx:if="{{completed}}" class="cook-card cook-done">
+      <view class="cook-kicker">完成</view><view class="cook-title">{{name}}</view><view class="cook-sub">出锅装盘，开饭</view>
+      <view wx:if="{{tips.length}}" class="cook-uses"><view class="cook-uses-title">小贴士</view><view wx:for="{{tips}}" wx:key="*this" class="cook-done-tip"><text>·</text><view selectable>{{item}}</view></view></view>
+      <button class="primary-button" open-type="share">分享这道菜</button><button class="secondary-button" bindtap="restart">再做一次</button>
+    </view>
+    <view wx:else class="cook-card">
+      <view class="cook-kicker"><text>第 {{stepIndex + 1}} 步 · 共 {{total}} 步</text><text wx:if="{{step.heat}}" class="cook-heat">{{step.heat}}</text></view>
+      <view class="cook-text" selectable>{{step.text}}</view>
+      <view wx:for="{{step.notes}}" wx:key="*this" class="cook-note" selectable>{{item}}</view>
+      <view wx:if="{{step.timeLabel}}" class="cook-time">参考时长 · {{step.timeLabel}}</view>
+      <view wx:if="{{supplies.length}}" class="cook-uses"><view class="cook-uses-title">这一步用到</view><view class="cook-supplies"><view wx:for="{{supplies}}" wx:key="id" class="cook-supply"><text class="cook-supply-name">{{item.name}}</text><text class="cook-supply-amount">{{item.amountsText}}</text></view></view><view class="cook-amount-note">用量为整道菜参考量，分次添加以步骤为准</view></view>
+      <view wx:else class="cook-uses"><button class="text-button" data-view="recipe" bindtap="switchView">查看菜谱原料清单 ›</button></view>
+    </view>
+  </block>
+</view>
+<view wx:if="{{!loading && !error && !completed}}" class="cook-nav">
+  <button class="cook-prev" disabled="{{stepIndex === 0}}" bindtap="previousStep" aria-label="上一步">←</button>
+  <view class="cook-position"><view class="cook-position-main">{{stepIndex + 1}} / {{total}}</view><view class="cook-position-hint">步骤进度</view></view>
+  <button class="cook-next" bindtap="nextStep">{{stepIndex === total - 1 ? '完成这道菜' : '下一步'}} →</button>
+</view>
